@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs').promises;
 const SeniorFormsModels = require('../models/SeniorFormsModels');
+const { handleServerError, handleNotFoundError } = require('../utils/errorHelpers');
 
 async function submitForm(req, res) {
   try {
@@ -13,8 +14,7 @@ async function submitForm(req, res) {
     const newFormEntry = await SeniorFormsModels.create(formData);
     res.status(201).json(newFormEntry);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    handleServerError(res, error);
   }
 }
 
@@ -23,8 +23,7 @@ async function getAllEntries(req, res) {
     const allFormEntries = await SeniorFormsModels.find();
     res.status(200).json(allFormEntries);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    handleServerError(res, error);
   }
 }
 
@@ -32,12 +31,11 @@ async function getEntryById(req, res) {
   try {
     const formEntry = await SeniorFormsModels.findById(req.params.id);
     if (!formEntry) {
-      return res.status(404).json({ error: 'Form entry not found' });
+      return handleNotFoundError(res, 'Form entry not found');
     }
     res.status(200).json(formEntry);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    handleServerError(res, error);
   }
 }
 
@@ -49,12 +47,11 @@ async function updateEntry(req, res) {
       { new: true }
     );
     if (!updatedFormEntry) {
-      return res.status(404).json({ error: 'Form entry not found' });
+      return handleNotFoundError(res, 'Form entry not found');
     }
     res.status(200).json(updatedFormEntry);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    handleServerError(res, error);
   }
 }
 
@@ -62,12 +59,11 @@ async function deleteEntry(req, res) {
   try {
     const deletedFormEntry = await SeniorFormsModels.findByIdAndDelete(req.params.id);
     if (!deletedFormEntry) {
-      return res.status(404).json({ error: 'Form entry not found' });
+      return handleNotFoundError(res, 'Form entry not found');
     }
     res.status(200).json({ message: 'Form entry deleted successfully' });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    handleServerError(res, error);
   }
 }
 
