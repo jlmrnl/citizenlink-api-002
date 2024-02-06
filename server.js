@@ -5,6 +5,7 @@ const cors = require('cors');
 const SeniorFormsRoutes = require('./src/routes/SeniorFormsRoutes');
 const _4PsFormsRoutes = require('./src/routes/_4PsFormsRoutes');
 const { connectToMongoDB } = require('./src/config/mongodbConfig');
+const { handleMongoDBError } = require('./src/utils/errorHelpers');
 
 const app = express();
 
@@ -21,8 +22,6 @@ connectToMongoDB()
   .then((port) => {
     console.log(`Server is running on port ${port}`);
   })
-  .catch((err) => {
-    console.error("Error connecting to MongoDB:", err.message);
-  });
+  .catch(handleMongoDBError);
 
 //test
