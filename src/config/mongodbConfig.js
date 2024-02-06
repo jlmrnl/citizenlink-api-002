@@ -6,7 +6,7 @@ async function connectToMongoDB() {
 
     console.log("Connected to MongoDB");
     // Return the port for server to listen on
-    return process.env.PORT || 3000;
+    return process.env.PORT || 4000;
   } catch (err) {
     throw new Error(`Error connecting to MongoDB: ${err.message}`);
   }
