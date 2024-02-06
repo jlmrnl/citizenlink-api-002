@@ -1,4 +1,5 @@
 const FourPsFormsModel = require('../models/_4PsFormsModels');
+const { handleServerError, handleNotFoundError } = require('../utils/errorHelpers');
 
 async function submitForm(req, res) {
   try {
@@ -7,7 +8,7 @@ async function submitForm(req, res) {
     await newForm.save();
     res.status(201).json(newForm);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    handleServerError(res, error);
   }
 }
 
@@ -16,7 +17,7 @@ async function getAllForms(req, res) {
     const forms = await FourPsFormsModel.find();
     res.json(forms);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    handleServerError(res, error);
   }
 }
 
@@ -24,11 +25,11 @@ async function getFormById(req, res) {
   try {
     const form = await FourPsFormsModel.findById(req.params.id);
     if (!form) {
-      return res.status(404).json({ message: 'Form not found' });
+      return handleNotFoundError(res, 'Form not found');
     }
     res.json(form);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    handleServerError(res, error);
   }
 }
 
@@ -39,11 +40,11 @@ async function updateFormById(req, res) {
       runValidators: true,
     });
     if (!form) {
-      return res.status(404).json({ message: 'Form not found' });
+      return handleNotFoundError(res, 'Form not found');
     }
     res.json(form);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    handleServerError(res, error);
   }
 }
 
@@ -51,11 +52,11 @@ async function deleteFormById(req, res) {
   try {
     const form = await FourPsFormsModel.findByIdAndDelete(req.params.id);
     if (!form) {
-      return res.status(404).json({ message: 'Form not found' });
+      return handleNotFoundError(res, 'Form not found');
     }
     res.json({ message: 'Form deleted successfully' });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    handleServerError(res, error);
   }
 }
 
