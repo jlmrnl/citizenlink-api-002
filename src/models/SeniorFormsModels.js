@@ -21,6 +21,7 @@ const SeniorFormsModelSchema = new mongoose.Schema({
   },
   barangay: {
     type: String,
+    enum: ['San Isidro Norte'],
     required: true
   },
   firstName: {
@@ -68,12 +69,18 @@ const SeniorFormsModelSchema = new mongoose.Schema({
     type: String // Store the file path instead of using Buffer
   },
   contactPerson: {
-    type: Number,
+    type: String,
     required: true
   },
   contactNumber: {
     type: Number,
-    required: true
+    required: true,
+    validate: {
+      validator: function(v) {
+        return /^(\d{11})$/.test(v); // Validate if the number is exactly 10 digits long
+      },
+      message: props => `${props.value} is not a valid phone number!`
+    }
   }
 });
 
