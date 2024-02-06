@@ -6,6 +6,10 @@ function handleServerError(res, error) {
   function handleNotFoundError(res, message) {
     res.status(404).json({ error: message });
   }
+
+  function handleMongoDBError(err) {
+    console.error("Error connecting to MongoDB:", err.message);
+  }
   
-  module.exports = { handleServerError, handleNotFoundError };
+  module.exports = { handleServerError, handleNotFoundError, handleMongoDBError };
   
