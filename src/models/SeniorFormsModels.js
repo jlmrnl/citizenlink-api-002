@@ -21,7 +21,7 @@ const SeniorFormsModelSchema = new mongoose.Schema({
   },
   barangay: {
     type: String,
-    enum: ['San Isidro Norte'],
+    enum: ['San Isidro Norte', San Isidro Sur],
     required: true
   },
   firstName: {
