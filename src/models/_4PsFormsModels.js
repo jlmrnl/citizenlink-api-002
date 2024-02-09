@@ -25,16 +25,17 @@ const _4PsFormsModelSchema = new mongoose.Schema({
   },
   barangay: {
     type: String,
-    enum: ['San Isidro Norte'],
+    enum: ['San Isidro Norte', San Isidro Sur],
     required: true
   },
   cityMunicipality: {
     type: String,
+    default: 'Binmaley',
     required: true
   },
   province: {
     type: String,
-    enum: ['Binmaley'],
+    enum: ['Pangasinan'],
     required: true
   },
   region: {
@@ -44,6 +45,7 @@ const _4PsFormsModelSchema = new mongoose.Schema({
   },
   postal: {
     type: String,
+    default: '2431',
     required: true
   },
   dateOfBirth: {
