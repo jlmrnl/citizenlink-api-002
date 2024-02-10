@@ -58,7 +58,7 @@ const _4PsFormsModelSchema = new mongoose.Schema({
   },
   applicationStatus: {
     type: String,
-    required: false
+    required: false,
     default: 'pending',
     enum: [
       'pending',
