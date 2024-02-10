@@ -25,7 +25,7 @@ const _4PsFormsModelSchema = new mongoose.Schema({
   },
   barangay: {
     type: String,
-    enum: ['San Isidro Norte', San Isidro Sur],
+    enum: ['San Isidro Norte', 'San Isidro Sur'],
     required: true
   },
   cityMunicipality: {
