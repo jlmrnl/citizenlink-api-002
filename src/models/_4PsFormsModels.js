@@ -55,6 +55,20 @@ const _4PsFormsModelSchema = new mongoose.Schema({
   contactNumber: {
     type: String,
     required: true
+  },
+  applicationStatus: {
+    type: String,
+    required: false
+    default: 'pending',
+    enum: [
+      'pending',
+      'on review',
+      'incomplete',
+      'not eligigle'
+      'eligible',
+      'rejected',
+      'approved'
+    ]
   }
 });
 
