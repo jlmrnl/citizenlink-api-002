@@ -90,7 +90,7 @@ const SeniorFormsModelSchema = new mongoose.Schema({
       'pending',
       'on review',
       'incomplete',
-      'not eligigle'
+      'not eligigle',
       'eligible',
       'rejected',
       'approved'

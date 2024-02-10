@@ -1,12 +1,12 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const User = require('../models/userModels');
 
 const registerUser = async (req, res) => {
     try {
-        const { username, password } = req.body;
+        const { userId, password } = req.body;
         const hashedPassword = await bcrypt.hash(password, 10);
-        const user = new User({ username, password: hashedPassword });
+        const user = new User({ userId, password: hashedPassword });
         await user.save();
         res.status(201).json({ message: "User registered successfully" });
     } catch (error) {
@@ -16,8 +16,8 @@ const registerUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
     try {
-        const { username, password } = req.body;
-        const user = await User.findOne({ username });
+        const { userId, password } = req.body;
+        const user = await User.findOne({ userId });
         if (!user) {
             return res.status(401).json({ message: "Invalid username or password" });
         }
@@ -25,7 +25,7 @@ const loginUser = async (req, res) => {
         if (!isPasswordMatch) {
             return res.status(401).json({ message: "Invalid username or password" });
         }
-        const token = jwt.sign({ userId: user._id }, 'your_secret_key');
+        const token = jwt.sign({ userId: user._id }, process.env.SECRET);
         res.json({ token });
     } catch (error) {
         res.status(500).json({ message: error.message });
