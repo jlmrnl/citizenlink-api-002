@@ -81,6 +81,20 @@ const SeniorFormsModelSchema = new mongoose.Schema({
       },
       message: props => `${props.value} is not a valid phone number!`
     }
+  },
+  applicationStatus: {
+    type: String,
+    required: false, 
+    default: 'pending',
+    enum: [
+      'pending',
+      'on review',
+      'incomplete',
+      'not eligigle'
+      'eligible',
+      'rejected',
+      'approved'
+    ]
   }
 });
 
