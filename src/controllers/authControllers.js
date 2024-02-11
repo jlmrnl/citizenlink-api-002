@@ -32,7 +32,18 @@ const loginUser = async (req, res) => {
     }
 };
 
+const checkAdminRole = async (req, res) => {
+        try {
+            const userCount = await User.countDocuments();
+            res.json({ count: userCount });
+    } catch (error) {
+            res.status(500).json({ message: 'Server Error' });
+    }
+
+};
+
 module.exports = {
     registerUser,
-    loginUser
+    loginUser,
+    checkAdminRole
 };
