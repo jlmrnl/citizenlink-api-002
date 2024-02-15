@@ -12,6 +12,16 @@ const userSchema = new mongoose.Schema({
      password: {
        type: String,
        required: true
+     },
+     role: { // This is for the access control
+      required: false,
+      type: String,
+      enum: [
+        'regional',
+        'municipal',
+        'barangay',
+        'citizen'
+      ]
      }
 });
 
