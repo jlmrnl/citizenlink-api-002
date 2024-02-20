@@ -93,7 +93,8 @@ const SeniorFormsModelSchema = new mongoose.Schema({
       'not eligigle',
       'eligible',
       'rejected',
-      'approved'
+      'approved',
+      'updated'
     ]
   }
 });
