@@ -67,7 +67,8 @@ const _4PsFormsModelSchema = new mongoose.Schema({
       'not eligigle',
       'eligible',
       'rejected',
-      'approved'
+      'approved',
+      'updated'
     ]
   }
 });
