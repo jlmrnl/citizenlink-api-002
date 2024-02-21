@@ -22,6 +22,15 @@ const userSchema = new mongoose.Schema({
         'barangay',
         'citizen'
       ]
+     },
+     accountStatus: { // This is for account activation
+      required: 'false',
+      type: String,
+      enum: [
+        'active',
+        'deactivated',
+        'archived'
+      ]
      }
 });
 
