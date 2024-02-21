@@ -25,7 +25,6 @@ const userSchema = new mongoose.Schema({
       ]
      },
      accountStatus: { // This is for account activation
-      required: 'false',
       type: String,
       enum: [
         'active',
