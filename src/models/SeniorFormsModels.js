@@ -7,12 +7,15 @@ const SeniorFormsModelSchema = new mongoose.Schema({
     enum: ['New', 'Replacement']
   },
   idNumber: {
+    required: 'false',
     type: Number
   },
   medicineBookletNumber: {
+    required: 'false',
     type: Number
   },
   purchaseDTIbooklet: {
+    required: 'false',
     type: Number
   },
   dateOfApplication: {
