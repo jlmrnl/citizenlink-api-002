@@ -3,10 +3,57 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/userSchema');
 const Profile = require('../models/profileSchema');
 
+let counters = {
+    'reg1': 1,
+    'mun-2417': 1,
+    '2417-30': 1,
+    '2417-05': 1,
+    'cit30': 1,
+    'cit05': 1
+};
+
 const registerUser = async (req, res) => {
     try {
-        const { userId, password, name, accessLevel, accountStatus } = req.body;
+        const { name, accessLevel, accountStatus, barangay, password } = req.body;
         const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Determine prefix based on accessLevel and barangay
+        let prefix = '';
+        switch(accessLevel) {
+            case 'regional':
+                prefix = 'reg1-';
+                break;
+            case 'municipal':
+                prefix = 'mun-2417-';
+                break;
+            case 'barangay':
+                if (barangay === 'San Isidro Norte') {
+                    prefix = '2417-30-';
+                } else {
+                    prefix = '2417-05-';
+                }
+                break;
+            default:
+                if (barangay === 'San Isidro Norte') {
+                    prefix = 'cit30-';
+                } else {
+                    prefix = 'cit05-';
+                }
+        }
+
+        // Initialize counter if not already defined
+        if (!counters[prefix]) {
+            counters[prefix] = 1;
+        }
+
+        // Generate a unique identifier based on the corresponding counter for the prefix
+        const uniqueIdentifier = counters[prefix].toString().padStart(5, '0');
+
+        // Combine prefix and unique identifier to generate userId
+        const userId = prefix + uniqueIdentifier;
+
+        // Increment the counter for the current prefix for the next registration
+        counters[prefix]++;
 
         // Create a new profile document
         const profile = new Profile({
@@ -20,11 +67,12 @@ const registerUser = async (req, res) => {
         const user = new User({
             userId,
             password: hashedPassword,
-            profile: profile._id // Associate the user with the profile
+            profile: profile._id, // Associate the user with the profile
         });
 
         await user.save();
-        res.status(201).json({ message: "User registered successfully" });
+        res.status(201).json({ message: "User registered successfully", userId });
+        console.log("userId: ", userId)
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
