@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const SeniorFormsModelSchema = new mongoose.Schema({
+const SeniorFormsSchema = new mongoose.Schema({
   typeOfApplication: {
     type: String,
     required: true,
@@ -102,6 +102,6 @@ const SeniorFormsModelSchema = new mongoose.Schema({
   }
 });
 
-const SeniorFormsModels = mongoose.model('SeniorFormsModels', SeniorFormsModelSchema);
+const SeniorFormsModels = mongoose.model('Senior Records', SeniorFormsSchema);
 
 module.exports = SeniorFormsModels;

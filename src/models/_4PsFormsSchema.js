@@ -70,9 +70,13 @@ const _4PsFormsModelSchema = new mongoose.Schema({
       'approved',
       'updated'
     ]
-  }
+  },
+  createdBy: {
+    type: String,
+    ref: 'Accounts'
+  }  
 });
 
-const _4PsFormsModel = mongoose.model('4PsFormsModel', _4PsFormsModelSchema);
+const _4PsFormsModel = mongoose.model('4Ps Records', _4PsFormsModelSchema);
 
 module.exports = _4PsFormsModel;

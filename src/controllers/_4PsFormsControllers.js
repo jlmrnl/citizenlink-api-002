@@ -1,10 +1,16 @@
-const FourPsFormsModel = require('../models/_4PsFormsModels');
+const mongoose = require('mongoose');
+const _4ps_records = require('../models/_4PsFormsSchema');
+
 const { handleServerError, handleNotFoundError } = require('../utils/errorHelpers');
 
 async function submitForm(req, res) {
   try {
     const formData = req.body;
-    const newForm = new FourPsFormsModel(formData);
+    // Ensure userId is converted to ObjectId
+    const createdBy = new mongoose.Types.ObjectId(req.userId);
+    console.log('User ID:', createdBy);
+    formData.createdBy = createdBy; // Assign the userId to createdBy
+    const newForm = new _4ps_records(formData);
     await newForm.save();
     res.status(201).json(newForm);
   } catch (error) {
@@ -12,9 +18,10 @@ async function submitForm(req, res) {
   }
 }
 
+
 async function getAllForms(req, res) {
   try {
-    const forms = await FourPsFormsModel.find();
+    const forms = await _4ps_records.find();
     res.json(forms);
   } catch (error) {
     handleServerError(res, error);
@@ -23,7 +30,7 @@ async function getAllForms(req, res) {
 
 async function getFormById(req, res) {
   try {
-    const form = await FourPsFormsModel.findById(req.params.id);
+    const form = await _4ps_records.findById(req.params.id);
     if (!form) {
       return handleNotFoundError(res, 'Form not found');
     }
@@ -35,7 +42,7 @@ async function getFormById(req, res) {
 
 async function updateFormById(req, res) {
   try {
-    const form = await FourPsFormsModel.findByIdAndUpdate(req.params.id, req.body, {
+    const form = await _4ps_records.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
     });
@@ -50,7 +57,7 @@ async function updateFormById(req, res) {
 
 async function deleteFormById(req, res) {
   try {
-    const form = await FourPsFormsModel.findByIdAndDelete(req.params.id);
+    const form = await _4ps_records.findByIdAndDelete(req.params.id);
     if (!form) {
       return handleNotFoundError(res, 'Form not found');
     }

@@ -1,20 +1,28 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../models/userModels');
+const User = require('../models/userSchema');
+const Profile = require('../models/profileSchema');
 
 const registerUser = async (req, res) => {
     try {
-        const { userId, password, name, accessLevel,  accountStatus} = req.body;
+        const { userId, password, name, accessLevel, accountStatus } = req.body;
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const user = new User({ 
-            userId,  
-            name, 
-            accessLevel,  
-            accountStatus,
-            password: hashedPassword
+        // Create a new profile document
+        const profile = new Profile({
+            name,
+            accessLevel,
+            accountStatus
         });
-        
+        await profile.save();
+
+        // Create a new user document and associate it with the profile
+        const user = new User({
+            userId,
+            password: hashedPassword,
+            profile: profile._id // Associate the user with the profile
+        });
+
         await user.save();
         res.status(201).json({ message: "User registered successfully" });
     } catch (error) {
@@ -25,7 +33,7 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
     try {
         const { userId, password } = req.body;
-        const user = await User.findOne({ userId });
+        const user = await User.findOne({ userId }).populate('profile');
         if (!user) {
             return res.status(401).json({ message: "Invalid username or password" });
         }
@@ -34,7 +42,8 @@ const loginUser = async (req, res) => {
             return res.status(401).json({ message: "Invalid username or password" });
         }
         const token = jwt.sign({ 
-            user: user
+            role: user.profile.accessLevel,
+            name: user.profile.name
         }, 
         process.env.SECRET,
         { expiresIn: '10h' }); // Token expires in 10 hours

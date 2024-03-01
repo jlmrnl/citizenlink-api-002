@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs').promises;
-const SeniorFormsModels = require('../models/SeniorFormsModels');
+const SeniorFormsModels = require('../models/SeniorFormsSchema');
 const { handleServerError, handleNotFoundError } = require('../utils/errorHelpers');
 
 async function submitForm(req, res) {
