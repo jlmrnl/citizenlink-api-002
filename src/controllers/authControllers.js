@@ -43,16 +43,19 @@ const loginUser = async (req, res) => {
         }
         const token = jwt.sign({ 
             role: user.profile.accessLevel,
-            name: user.profile.name
+            name: user.profile.name,
+            userId: user.userId
         }, 
         process.env.SECRET,
-        { expiresIn: '10h' }); // Token expires in 10 hours
+        { expiresIn: '10h' });
         
         res.json({ token });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
+
+
 
 const checkAdminRole = async (req, res) => {
         try {
@@ -64,8 +67,19 @@ const checkAdminRole = async (req, res) => {
 
 };
 
+const getAllUsers = async (req, res) => {
+    try {
+        // Query the database to get all user documents
+        const users = await User.find().populate('profile');
+        res.json(users); // Return the list of users as JSON response
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     registerUser,
     loginUser,
-    checkAdminRole
+    checkAdminRole,
+    getAllUsers
 };

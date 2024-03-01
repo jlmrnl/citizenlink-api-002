@@ -7,8 +7,8 @@ async function submitForm(req, res) {
   try {
     const formData = req.body;
     // Ensure userId is converted to ObjectId
-    const createdBy = new mongoose.Types.ObjectId(req.userId);
-    console.log('User ID:', createdBy);
+    const createdBy = req.userId;
+    console.log('A user had logged:', createdBy);
     formData.createdBy = createdBy; // Assign the userId to createdBy
     const newForm = new _4ps_records(formData);
     await newForm.save();
