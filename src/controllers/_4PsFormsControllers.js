@@ -7,7 +7,7 @@ async function submitForm(req, res) {
   try {
     const formData = req.body;
     // Ensure userId is converted to ObjectId
-    const createdBy = req.userId;
+    const createdBy = req.name;
     console.log('A user had logged:', createdBy);
     formData.createdBy = createdBy; // Assign the userId to createdBy
     const newForm = new _4ps_records(formData);
