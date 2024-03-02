@@ -6,12 +6,16 @@ const { handleServerError, handleNotFoundError } = require('../utils/errorHelper
 async function submitForm(req, res) {
   try {
     const formData = req.body;
+    const createdBy = req.name;
+    formData.createdBy = createdBy; // Assign the userId to createdBy
+
     if (req.file) {
       // If an image is uploaded, store the file path
       formData.picture = path.join('uploads', req.file.filename);
     }
 
     const newFormEntry = await SeniorFormsModels.create(formData);
+    console.log(`${createdBy} created a record`);
     res.status(201).json(newFormEntry);
   } catch (error) {
     handleServerError(res, error);
