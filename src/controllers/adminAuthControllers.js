@@ -5,9 +5,9 @@ const Profile = require('../models/profileSchema');
 
 let counters = {
     'reg1': 1,
-    'mun-2417': 1,
-    '2417-30': 1,
-    '2417-05': 1,
+    'lgu2417': 1,
+    'brgy30': 1,
+    'brgy05': 1,
     'cit30': 1,
     'cit05': 1
 };
@@ -24,13 +24,13 @@ const registerUser = async (req, res) => {
                 prefix = 'reg1-';
                 break;
             case 'municipal':
-                prefix = 'mun-2417-';
+                prefix = 'lgu2417-';
                 break;
             case 'barangay':
                 if (barangay === 'San Isidro Norte') {
-                    prefix = '2417-30-';
+                    prefix = 'brgy30-';
                 } else {
-                    prefix = '2417-05-';
+                    prefix = 'brgy05-';
                 }
                 break;
             default:
