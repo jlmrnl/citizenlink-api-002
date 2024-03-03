@@ -1,18 +1,13 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const _4ps_records = require('../models/_4PsFormsSchema');
-const Citizen = require('../models/citizenUserSchema');
-
+const Citizen = require('../models/_4psUserSchema');
 const { handleServerError, handleNotFoundError } = require('../utils/errorHelpers');
-
-
 
 async function submitForm(req, res) {
   try {
     const formData = req.body;
-    const createdBy = req.name; // Assuming user ID is available in the request
-
-    // Hash the password
+    const createdBy = req.name;
     const hashedPassword = await bcrypt.hash(formData.password, 10);
 
     // Determine the prefix based on the barangay
@@ -21,12 +16,29 @@ async function submitForm(req, res) {
       prefix = 'cit30-';
     }
 
-    // Generate the next unique identifier
-    const userCount = await Citizen.countDocuments();
-    const identifier = String(userCount + 1).padStart(5, '0');
+    let userIdExists = true;
+    let userId;
+    let identifier;
 
-    // Construct the userId
-    const userId = prefix + identifier;
+    // Keep generating unique userIds until one doesn't exist in the database
+    while (userIdExists) {
+      // Generate the next unique identifier
+      const userCount = await Citizen.countDocuments();
+      identifier = String(userCount + 1).padStart(5, '0');
+
+      // Construct the userId
+      userId = prefix + identifier;
+
+      console.log('Generated userId:', userId); // Log generated userId
+      
+      // Check if the userId already exists in the database
+      const existingUser = await Citizen.findOne({ userId });
+
+      if (!existingUser) {
+        // If userId doesn't exist, exit the loop
+        userIdExists = false;
+      }
+    }
 
     // Combine name fields
     const fullName = [
@@ -42,24 +54,20 @@ async function submitForm(req, res) {
       password: hashedPassword,
       name: fullName
     });
-
-    // Save the new user to the database
     await newUser.save();
 
     // Assign the createdBy field to the userId of the user who submitted the form
     formData.createdBy = createdBy;
-
-    // Set the user reference in the form
     formData.user = newUser._id;
-
-    // Set the generated userId on the form data
     formData.userId = userId;
 
     // Create a new form instance with the form data
     const newForm = new _4ps_records(formData);
-
-    // Save the new form to the database
     await newForm.save();
+
+   // Store the ObjectId of the created 4Ps record in the records field of the user
+   newUser.records = newForm._id;
+   await newUser.save();
 
     console.log(`${createdBy} created a record`);
     res.status(201).json(newForm);
@@ -67,6 +75,8 @@ async function submitForm(req, res) {
     handleServerError(res, error);
   }
 }
+
+
 
 async function getAllForms(req, res) {
   try {

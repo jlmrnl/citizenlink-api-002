@@ -14,10 +14,14 @@ const userSchema = new mongoose.Schema({
      },
      profile: {
          type: mongoose.Schema.Types.ObjectId,
-         ref: 'Profile'
-     }
+         ref: 'lgu profiles'
+     },
+     createdAt: {
+       type: Date,
+       default: Date.now
+     }  
 });
 
-const userModel = mongoose.model('Accounts', userSchema);
+const userModel = mongoose.model('lgu accounts', userSchema);
 
 module.exports = userModel;

@@ -83,9 +83,13 @@ const _4PsFormsModelSchema = new mongoose.Schema({
   userId: {
     type: String,
     unique: true
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
   }  
 });
 
-const _4PsFormsModel = mongoose.model('4Ps Records', _4PsFormsModelSchema);
+const _4PsFormsModel = mongoose.model('4ps records', _4PsFormsModelSchema);
 
 module.exports = _4PsFormsModel;

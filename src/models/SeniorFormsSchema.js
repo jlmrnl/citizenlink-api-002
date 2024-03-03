@@ -103,9 +103,13 @@ const SeniorFormsSchema = new mongoose.Schema({
   },
   picture: {
     type: String // Store the file path instead of using Buffer
+  }  ,
+  createdAt: {
+    type: Date,
+    default: Date.now
   }  
 });
 
-const SeniorFormsModels = mongoose.model('Senior Records', SeniorFormsSchema);
+const SeniorFormsModels = mongoose.model('senior records', SeniorFormsSchema);
 
 module.exports = SeniorFormsModels;

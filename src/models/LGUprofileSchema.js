@@ -25,9 +25,13 @@ const profileSchema = new mongoose.Schema({
       'archived'
     ],
     default: 'active' // Default status is 'active'
-    }
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now
+    }  
   });
   
-  const Profile = mongoose.model('Profile', profileSchema);
+  const Profile = mongoose.model('lgu profiles', profileSchema);
 
   module.exports = Profile;

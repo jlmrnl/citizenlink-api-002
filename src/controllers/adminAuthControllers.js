@@ -1,15 +1,13 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../models/userSchema');
-const Profile = require('../models/profileSchema');
+const User = require('../models/LGUuserSchema');
+const Profile = require('../models/LGUprofileSchema');
 
 let counters = {
     'reg1': 1,
-    'lgu2417': 1,
+    'mun2417': 1,
     'brgy30': 1,
-    'brgy05': 1,
-    'cit30': 1,
-    'cit05': 1
+    'brgy05': 1
 };
 
 const registerUser = async (req, res) => {
@@ -24,7 +22,7 @@ const registerUser = async (req, res) => {
                 prefix = 'reg1-';
                 break;
             case 'municipal':
-                prefix = 'lgu2417-';
+                prefix = 'mun2417-';
                 break;
             case 'barangay':
                 if (barangay === 'San Isidro Norte') {
@@ -33,12 +31,6 @@ const registerUser = async (req, res) => {
                     prefix = 'brgy05-';
                 }
                 break;
-            default:
-                if (barangay === 'San Isidro Norte') {
-                    prefix = 'cit30-';
-                } else {
-                    prefix = 'cit05-';
-                }
         }
 
         // Initialize counter if not already defined

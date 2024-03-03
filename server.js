@@ -17,7 +17,7 @@ app.use(bodyParser.json());
 
 app.use('/api/senior', Senior);
 app.use('/api/4ps', FourPs);
-app.use('/api/auth', authRoutes);
+app.use('/api/lgu', authRoutes); //binago ko itooo
 app.use('/uploads', express.static('uploads'));
 
 connectToMongoDB()
