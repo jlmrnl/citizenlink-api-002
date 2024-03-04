@@ -16,7 +16,7 @@ const citizenSchema = new mongoose.Schema({
       },
       records: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: '4ps records'
+        ref: 'senior records'
       },
       role: {
         type: String,
@@ -30,6 +30,6 @@ const citizenSchema = new mongoose.Schema({
       
 });
 
-const _4ps = mongoose.model('4ps accounts', citizenSchema);
+const Senior = mongoose.model('senior accounts', citizenSchema);
 
-module.exports = _4ps;
+module.exports = Senior;

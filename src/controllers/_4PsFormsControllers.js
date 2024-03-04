@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const _4ps_records = require('../models/_4PsFormsSchema');
-const Citizen = require('../models/_4psUserSchema');
+const _4ps = require('../models/_4psUserSchema');
 const { handleServerError, handleNotFoundError } = require('../utils/errorHelpers');
 
 const submitForm = async (req, res) => {
@@ -11,9 +11,9 @@ const submitForm = async (req, res) => {
     const hashedPassword = await bcrypt.hash(formData.password, 10);
 
     // Determine the prefix based on the barangay
-    let prefix = 'cit05-';
+    let prefix = '4ps05-';
     if (formData.barangay === 'San Isidro Norte') {
-      prefix = 'cit30-';
+      prefix = '4ps30-';
     }
 
     let userIdExists = true;
@@ -23,7 +23,7 @@ const submitForm = async (req, res) => {
     // Keep generating unique userIds until one doesn't exist in the database
     while (userIdExists) {
       // Generate the next unique identifier
-      const userCount = await Citizen.countDocuments();
+      const userCount = await _4ps.countDocuments();
       identifier = String(userCount + 1).padStart(5, '0');
 
       // Construct the userId
@@ -32,7 +32,7 @@ const submitForm = async (req, res) => {
       console.log('Generated userId:', userId); // Log generated userId
       
       // Check if the userId already exists in the database
-      const existingUser = await Citizen.findOne({ userId });
+      const existingUser = await _4ps.findOne({ userId });
 
       if (!existingUser) {
         // If userId doesn't exist, exit the loop
@@ -49,12 +49,11 @@ const submitForm = async (req, res) => {
     ].filter(Boolean).join(' ');
 
     // Create a new user instance with the user data
-    const newUser = new Citizen({ 
+    const newUser = new _4ps({ 
       userId, 
       password: hashedPassword,
       name: fullName
     });
-    await newUser.save();
 
     // Assign the createdBy field to the userId of the user who submitted the form
     formData.createdBy = createdBy;

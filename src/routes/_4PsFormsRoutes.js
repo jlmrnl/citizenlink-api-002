@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { submitForm, getAllForms, getFormById, updateFormById, deleteFormById } = require('../controllers/_4PsFormsControllers');
-const { login } = require('../controllers/userAuthControllers');
+const { login } = require('../controllers/_4PsAuthControllers');
 const authenticateUser = require('../middleware/authMiddleware');
 const extractUserIdFromToken = require('../middleware/jwtMiddleware');
 

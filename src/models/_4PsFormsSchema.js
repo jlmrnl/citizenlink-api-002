@@ -73,11 +73,11 @@ const _4PsFormsModelSchema = new mongoose.Schema({
   },
   createdBy: {
     type: String,
-    ref: 'Accounts'
+    ref: 'lgu accounts'
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Citizen',
+    ref: '4ps accounts',
     unique: true
   },
   userId: {
