@@ -5,6 +5,9 @@ const _4ps = require('../models/_4psUserSchema');
 const { handleServerError, handleNotFoundError } = require('../utils/errorHelpers');
 
 const submitForm = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  
   try {
     const formData = req.body;
     const createdBy = req.name;
@@ -62,17 +65,26 @@ const submitForm = async (req, res) => {
 
     // Create a new form instance with the form data
     const newForm = new _4ps_records(formData);
-    await newForm.save();
+
 
    // Store the ObjectId of the created 4Ps record in the records field of the user
    newUser.records = newForm._id;
-   await newUser.save();
 
-    console.log(`${createdBy} created a record`);
-    res.status(201).json(newForm);
-  } catch (error) {
-    handleServerError(res, error);
-  }
+   await newForm.save({ session });
+
+   // Store the ObjectId of the created senior form record in the records field of the user
+   newUser.records = newForm._id;
+   await newUser.save({ session });
+
+   console.log(`${createdBy} created a record`);
+   await session.commitTransaction();
+   res.status(201).json(newForm);
+ } catch (error) {
+   await session.abortTransaction();
+   handleServerError(res, error);
+ } finally {
+   session.endSession();
+ }
 }
 
 const getAllForms = async (req, res) => {
