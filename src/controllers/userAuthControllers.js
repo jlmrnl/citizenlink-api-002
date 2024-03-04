@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const userModel = require('../models/_4psUserSchema');
 const jwt = require('jsonwebtoken');
 
-async function login(req, res) {
+const login = async (req, res) => {
   try {
     const { userId, password } = req.body;
 

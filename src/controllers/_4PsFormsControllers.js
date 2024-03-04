@@ -4,7 +4,7 @@ const _4ps_records = require('../models/_4PsFormsSchema');
 const Citizen = require('../models/_4psUserSchema');
 const { handleServerError, handleNotFoundError } = require('../utils/errorHelpers');
 
-async function submitForm(req, res) {
+const submitForm = async (req, res) => {
   try {
     const formData = req.body;
     const createdBy = req.name;
@@ -76,7 +76,7 @@ async function submitForm(req, res) {
   }
 }
 
-async function getAllForms(req, res) {
+const getAllForms = async (req, res) => {
   try {
     const forms = await _4ps_records.find();
     res.json(forms);
@@ -85,7 +85,7 @@ async function getAllForms(req, res) {
   }
 }
 
-async function getFormById(req, res) {
+const getFormById = async (req, res) => {
   try {
     const form = await _4ps_records.findById(req.params.id);
     if (!form) {
@@ -97,7 +97,7 @@ async function getFormById(req, res) {
   }
 }
 
-async function updateFormById(req, res) {
+const updateFormById = async (req, res) => {
   try {
     const form = await _4ps_records.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
@@ -112,7 +112,7 @@ async function updateFormById(req, res) {
   }
 }
 
-async function deleteFormById(req, res) {
+const deleteFormById = async (req, res) => {
   try {
     const form = await _4ps_records.findByIdAndDelete(req.params.id);
     if (!form) {

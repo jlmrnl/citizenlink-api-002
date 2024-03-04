@@ -3,7 +3,7 @@ const fs = require('fs').promises;
 const SeniorFormsModels = require('../models/SeniorFormsSchema');
 const { handleServerError, handleNotFoundError } = require('../utils/errorHelpers');
 
-async function submitForm(req, res) {
+const submitForm = async (req, res) => {
   try {
     const formData = req.body;
     const createdBy = req.name;
@@ -22,7 +22,7 @@ async function submitForm(req, res) {
   }
 }
 
-async function getAllEntries(req, res) {
+const getAllEntries = async (req, res) => {
   try {
     const allFormEntries = await SeniorFormsModels.find();
     res.status(200).json(allFormEntries);
@@ -31,7 +31,7 @@ async function getAllEntries(req, res) {
   }
 }
 
-async function getEntryById(req, res) {
+const getEntryById = async (req, res) => {
   try {
     const formEntry = await SeniorFormsModels.findById(req.params.id);
     if (!formEntry) {
@@ -43,7 +43,7 @@ async function getEntryById(req, res) {
   }
 }
 
-async function updateEntry(req, res) {
+const updateEntry = async (req, res) => {
   try {
     const updatedFormEntry = await SeniorFormsModels.findByIdAndUpdate(
       req.params.id,
@@ -59,7 +59,7 @@ async function updateEntry(req, res) {
   }
 }
 
-async function deleteEntry(req, res) {
+const deleteEntry = async (req, res) => {
   try {
     const deletedFormEntry = await SeniorFormsModels.findByIdAndDelete(req.params.id);
     if (!deletedFormEntry) {
