@@ -76,8 +76,6 @@ async function submitForm(req, res) {
   }
 }
 
-
-
 async function getAllForms(req, res) {
   try {
     const forms = await _4ps_records.find();
