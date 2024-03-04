@@ -26,6 +26,10 @@ const profileSchema = new mongoose.Schema({
     ],
     default: 'active' // Default status is 'active'
     },
+    barangay: {
+      type: String,
+      enum: ['San Isidro Norte', 'Baybay Lopez']
+    },
     createdAt: {
       type: Date,
       default: Date.now
