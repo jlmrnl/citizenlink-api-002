@@ -38,14 +38,28 @@ const registerUser = async (req, res) => {
             counters[prefix] = 1;
         }
 
-        // Generate a unique identifier based on the corresponding counter for the prefix
-        const uniqueIdentifier = counters[prefix].toString().padStart(5, '0');
+        let userIdExists = true;
+        let userId;
 
-        // Combine prefix and unique identifier to generate userId
-        const userId = prefix + uniqueIdentifier;
+        // Keep generating unique userIds until one doesn't exist in the database
+        while (userIdExists) {
+            // Generate a unique identifier based on the corresponding counter for the prefix
+            const uniqueIdentifier = counters[prefix].toString().padStart(5, '0');
 
-        // Increment the counter for the current prefix for the next registration
-        counters[prefix]++;
+            // Combine prefix and unique identifier to generate userId
+            userId = prefix + uniqueIdentifier;
+
+            // Check if the userId already exists in the database
+            const existingUser = await User.findOne({ userId });
+
+            if (!existingUser) {
+                // If userId doesn't exist, exit the loop
+                userIdExists = false;
+            } else {
+                // Increment the counter for the current prefix for the next registration
+                counters[prefix]++;
+            }
+        }
 
         // Create a new profile document
         const profile = new Profile({
@@ -69,6 +83,7 @@ const registerUser = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
 
 const loginUser = async (req, res) => {
     try {
