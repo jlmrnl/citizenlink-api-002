@@ -78,7 +78,10 @@ const submitForm = async (req, res) => {
 
    console.log(`${createdBy} created a record`);
    await session.commitTransaction();
-   res.status(201).json(newForm);
+   res.status(201).json({
+        records: newForm,
+        userId: userId
+   });
  } catch (error) {
    await session.abortTransaction();
    handleServerError(res, error);
