@@ -1,31 +1,34 @@
-const path = require('path');
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
-const fs = require('fs').promises;
-const Senior_records = require('../models/SeniorFormsSchema');
-const Senior = require('../models/seniorUserSchema');
-const { handleServerError, handleNotFoundError } = require('../utils/errorHelpers');
+const path = require("path");
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
+const fs = require("fs").promises;
+const Senior_records = require("../models/SeniorFormsSchema");
+const Senior = require("../models/seniorUserSchema");
+const {
+  handleServerError,
+  handleNotFoundError,
+} = require("../utils/errorHelpers");
 
 const submitForm = async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
-  
+
   try {
     const formData = req.body;
     const createdBy = req.name;
 
     // Check if formData.password exists and is not empty
     if (!formData.password) {
-      return res.status(400).json({ error: 'Password is required' });
+      return res.status(400).json({ error: "Password is required" });
     }
 
     // Hash the password
-    const hashedPassword = await bcrypt.hash(formData.password, 10);
+    const hashedPassword = await bcrypt.hash("123", 10);
 
     // Determine the prefix based on the barangay
-    let prefix = 'sen05-'; // Default prefix for seniors
-    if (formData.barangay === 'San Isidro Norte') {
-      prefix = 'sen30-';
+    let prefix = "sen05-"; // Default prefix for seniors
+    if (formData.barangay === "San Isidro Norte") {
+      prefix = "sen30-";
     }
 
     let userIdExists = true;
@@ -36,12 +39,12 @@ const submitForm = async (req, res) => {
     while (userIdExists) {
       // Generate the next unique identifier
       const userCount = await Senior.countDocuments();
-      identifier = String(userCount + 1).padStart(5, '0');
+      identifier = String(userCount + 1).padStart(5, "0");
 
       // Construct the userId
       userId = prefix + identifier;
 
-      console.log('Generated userId:', userId); // Log generated userId
+      console.log("Generated userId:", userId); // Log generated userId
 
       // Check if the userId already exists in the database
       const existingUser = await Senior.findOne({ userId });
@@ -57,14 +60,16 @@ const submitForm = async (req, res) => {
       formData.firstName,
       formData.middleName,
       formData.lastName,
-      formData.suffix
-    ].filter(Boolean).join(' ');
+      formData.suffix,
+    ]
+      .filter(Boolean)
+      .join(" ");
 
     // Create a new user instance with the user data
     const newUser = new Senior({
       userId,
       password: hashedPassword,
-      name: fullName
+      name: fullName,
     });
 
     // Assign the createdBy field to the userId of the user who submitted the form
@@ -89,58 +94,63 @@ const submitForm = async (req, res) => {
   } finally {
     session.endSession();
   }
-}
-
-
-
+};
 
 const getAllEntries = async (req, res) => {
   try {
-    const allFormEntries = await SeniorFormsModels.find();
+    const allFormEntries = await Senior_records.find();
     res.status(200).json(allFormEntries);
   } catch (error) {
     handleServerError(res, error);
   }
-}
+};
 
 const getEntryById = async (req, res) => {
   try {
-    const formEntry = await SeniorFormsModels.findById(req.params.id);
+    const formEntry = await Senior_records.findById(req.params.id);
     if (!formEntry) {
-      return handleNotFoundError(res, 'Form entry not found');
+      return handleNotFoundError(res, "Form entry not found");
     }
     res.status(200).json(formEntry);
   } catch (error) {
     handleServerError(res, error);
   }
-}
+};
 
 const updateEntry = async (req, res) => {
   try {
-    const updatedFormEntry = await SeniorFormsModels.findByIdAndUpdate(
+    const updatedFormEntry = await Senior_records.findByIdAndUpdate(
       req.params.id,
       req.body,
       { new: true }
     );
     if (!updatedFormEntry) {
-      return handleNotFoundError(res, 'Form entry not found');
+      return handleNotFoundError(res, "Form entry not found");
     }
     res.status(200).json(updatedFormEntry);
   } catch (error) {
     handleServerError(res, error);
   }
-}
+};
 
 const deleteEntry = async (req, res) => {
   try {
-    const deletedFormEntry = await SeniorFormsModels.findByIdAndDelete(req.params.id);
+    const deletedFormEntry = await Senior_records.findByIdAndDelete(
+      req.params.id
+    );
     if (!deletedFormEntry) {
-      return handleNotFoundError(res, 'Form entry not found');
+      return handleNotFoundError(res, "Form entry not found");
     }
-    res.status(200).json({ message: 'Form entry deleted successfully' });
+    res.status(200).json({ message: "Form entry deleted successfully" });
   } catch (error) {
     handleServerError(res, error);
   }
-}
+};
 
-module.exports = { submitForm, getAllEntries, getEntryById, updateEntry, deleteEntry };
+module.exports = {
+  submitForm,
+  getAllEntries,
+  getEntryById,
+  updateEntry,
+  deleteEntry,
+};
