@@ -15,6 +15,14 @@ const _4PsFormsModelSchema = new mongoose.Schema({
   suffix: {
     type: String
   },
+  sex:{
+    type: String,
+    unum: ['male','female'],
+    required: true
+  },
+  placeOfBirth: {
+    type: String
+  },
   houseNumber: {
     type: Number,
     required: true
