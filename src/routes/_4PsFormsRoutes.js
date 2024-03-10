@@ -7,7 +7,7 @@ const {
   updateFormById,
   deleteFormById,
 } = require("../controllers/_4PsFormsControllers");
-const { login } = require("../controllers/_4PsAuthControllers");
+const { login, getAllUsers } = require("../controllers/_4PsAuthControllers");
 const authenticateUser = require("../middleware/authMiddleware");
 const extractUserIdFromToken = require("../middleware/jwtMiddleware");
 
@@ -18,5 +18,6 @@ router.put("/forms/:id", updateFormById);
 router.delete("/forms/:id", deleteFormById);
 
 router.post("/login", login);
+router.get("/users", getAllUsers);
 
 module.exports = router;
