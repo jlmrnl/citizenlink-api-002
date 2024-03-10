@@ -31,6 +31,9 @@ const SeniorFormsSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  suffix: {
+    type: String
+  },
   age: {
     type: Number,
     required: true
