@@ -34,6 +34,8 @@ const login = async (req, res) => {
         role: user.role,
         applicationStatus: user.records.applicationStatus,
         barangay: user.records.barangay,
+        user_id: user._id,
+        records_id: user.records._id,
       },
       process.env.SECRET,
       { expiresIn: "10h" }
