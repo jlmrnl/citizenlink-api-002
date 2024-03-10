@@ -45,7 +45,7 @@ const _4PsFormsModelSchema = new mongoose.Schema({
   },
   postal: {
     type: String,
-    default: '2431',
+    default: '2417',
     required: true
   },
   dateOfBirth: {
