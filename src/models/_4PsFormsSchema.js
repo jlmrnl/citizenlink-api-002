@@ -57,7 +57,8 @@ const _4PsFormsModelSchema = new mongoose.Schema({
     required: true
   },
   dateOfBirth: {
-    required: true
+    type: String,
+    required: true,
   },
   contactNumber: {
     type: String,

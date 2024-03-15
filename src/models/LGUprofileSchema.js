@@ -20,7 +20,8 @@ const profileSchema = new mongoose.Schema({
       default: 'NA'
     },
     dateOfBirth: {
-      required: true
+      type: String,
+      required: true,
     },
     accessLevel: {
     type: String,
