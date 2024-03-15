@@ -58,11 +58,15 @@ const submitForm = async (req, res) => {
       .filter(Boolean)
       .join(" ");
 
+    // Format date of birth to exclude time part
+    const formattedDateOfBirth = new Date(formData.dateOfBirth).toISOString().split('T')[0];
+
     // Create a new user instance with the user data
     const newUser = new _4ps({
       userId,
       password: hashedPassword,
       name: fullName,
+      dateOfBirth: formattedDateOfBirth // Assign formatted date of birth
     });
 
     // Assign the createdBy field to the userId of the user who submitted the form
@@ -95,6 +99,7 @@ const submitForm = async (req, res) => {
     session.endSession();
   }
 };
+
 
 const getAllForms = async (req, res) => {
   try {
