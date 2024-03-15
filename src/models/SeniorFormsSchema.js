@@ -53,8 +53,7 @@ const SeniorFormsSchema = new mongoose.Schema({
     enum: ["Filipino", "Other"],
   },
   dateOfBirth: {
-    type: String,
-    required: true,
+    type: String
   },
   placeOfBirth: {
     type: String,
