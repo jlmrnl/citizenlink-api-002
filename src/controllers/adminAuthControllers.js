@@ -12,7 +12,7 @@ let counters = {
 
 const registerUser = async (req, res) => {
     try {
-        const { name, accessLevel, accountStatus, barangay, password } = req.body;
+        const { firstName, middleName, lastName, suffix, accessLevel, accountStatus, barangay, password } = req.body;
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Determine prefix based on accessLevel and barangay
@@ -63,7 +63,10 @@ const registerUser = async (req, res) => {
 
         // Create a new profile document
         const profile = new Profile({
-            name,
+            firstName,
+            middleName,
+            lastName,
+            suffix,
             accessLevel,
             accountStatus
         });
@@ -96,9 +99,19 @@ const loginUser = async (req, res) => {
         if (!isPasswordMatch) {
             return res.status(401).json({ message: "Invalid username or password" });
         }
+
+        let fullName = user.profile.firstName;
+        if (user.profile.middleName) {
+            fullName += ` ${user.profile.middleName}`;
+        }
+        fullName += ` ${user.profile.lastName}`;
+        if (user.profile.suffix) {
+            fullName += ` ${user.profile.suffix}`;
+        }
+
         const token = jwt.sign({ 
             role: user.profile.accessLevel,
-            name: user.profile.name,
+            name: fullName,
             userId: user.userId
         }, 
         process.env.SECRET,
@@ -109,6 +122,7 @@ const loginUser = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
 
 
 
