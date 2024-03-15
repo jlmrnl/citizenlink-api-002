@@ -1,9 +1,26 @@
 const mongoose = require('mongoose');
 
 const profileSchema = new mongoose.Schema({
-    name: {
+    firstName: {
       type: String,
       required: true
+    },
+    lastName: {
+      type: String,
+      required: true
+    },
+    middleName: {
+      type: String
+    },
+    suffix:{
+      type: String
+    },
+    position: {
+      type: String,
+      default: 'NA'
+    },
+    dateOfBirth: {
+      type: Date
     },
     accessLevel: {
     type: String,
