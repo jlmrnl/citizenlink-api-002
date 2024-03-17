@@ -18,10 +18,7 @@ const submitForm = async (req, res) => {
     const createdBy = req.name;
 
     // Check if formData.password exists and is not empty
-    if (!formData.password) {
-      return res.status(400).json({ error: "Password is required" });
-    }
-
+ 
     // Hash the password
     const hashedPassword = await bcrypt.hash("123", 10);
 

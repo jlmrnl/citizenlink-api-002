@@ -53,7 +53,8 @@ const SeniorFormsSchema = new mongoose.Schema({
     enum: ["Filipino", "Other"],
   },
   dateOfBirth: {
-    type: String
+    type: String,
+
   },
   placeOfBirth: {
     type: String,
@@ -78,7 +79,7 @@ const SeniorFormsSchema = new mongoose.Schema({
       "pending",
       "on review",
       "incomplete",
-      "not eligigle",
+      "not eligible",
       "eligible",
       "rejected",
       "approved",
