@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const _4ps_records = require("../models/_4PsFormsSchema");
 const _4ps = require("../models/_4psUserSchema");
+const Senior_records = require("../models/SeniorFormsSchema");
+const Admin_profile = require('../models/LGUprofileSchema');
 const {
   handleServerError,
   handleNotFoundError,
@@ -17,6 +19,28 @@ const submitForm = async (req, res) => {
 
     // Auto-generate password "123"
     const hashedPassword = await bcrypt.hash("123", 10);
+
+    // Ensure email is provided and not null
+    const email = formData.email;
+    if (!email || typeof email !== 'string') {
+      return res.status(400).json({ error: "Email is required" });
+    }
+
+    // Check if email exists in any of the schemas
+    const emailExists = await Promise.any([
+      _4ps_records.exists({ email }),
+      Senior_records.exists({ email }),
+      Admin_profile.exists({ email })
+    ]);
+    if (emailExists) {
+      console.log('Email already exists'); // Log the message
+      return res.status(400).json({ error: "Email already exists" });
+    }
+    // Ignore null email values
+    if (email === null) {
+      console.log('Email is null, ignoring the record');
+      return res.status(400).json({ error: "Email cannot be null" });
+    }
 
     // Determine the prefix based on the barangay
     let prefix = "4ps05-";
