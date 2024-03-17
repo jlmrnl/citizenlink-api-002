@@ -4,6 +4,8 @@ const bcrypt = require("bcrypt");
 const fs = require("fs").promises;
 const Senior_records = require("../models/SeniorFormsSchema");
 const Senior = require("../models/seniorUserSchema");
+const _4ps_records = require('../models/_4PsFormsSchema');
+const Admin_profile = require('../models/LGUprofileSchema');
 const {
   handleServerError,
   handleNotFoundError,
@@ -16,11 +18,31 @@ const submitForm = async (req, res) => {
   try {
     const formData = req.body;
     const createdBy = req.name;
-
-    // Check if formData.password exists and is not empty
- 
-    // Hash the password
     const hashedPassword = await bcrypt.hash("123", 10);
+
+    // Ensure email is provided and not null
+    const email = formData.email;
+    if (!email || typeof email !== 'string') {
+      return res.status(400).json({ error: "Email is required" });
+    }
+
+    // Check if email exists in any of the schemas
+    const emailExists = await Promise.any([
+      _4ps_records.exists({ email }),
+      Senior_records.exists({ email }),
+      Admin_profile.exists({ email })
+    ]);
+
+    if (emailExists) {
+      console.log('Email already exists'); // Log the message
+      return res.status(400).json({ error: "Email already exists" });
+    }
+
+    // Ignore null email values
+    if (email === null) {
+      console.log('Email is null, ignoring the record');
+      return res.status(400).json({ error: "Email cannot be null" });
+    }
 
     // Determine the prefix based on the barangay
     let prefix = "sen05-"; // Default prefix for seniors
@@ -28,27 +50,15 @@ const submitForm = async (req, res) => {
       prefix = "sen30-";
     }
 
-    let userIdExists = true;
+    // Generate a unique userId
     let userId;
     let identifier;
-
-    // Keep generating unique userIds until one doesn't exist in the database
-    while (userIdExists) {
-      // Generate the next unique identifier
-      const userCount = await Senior.countDocuments();
-      identifier = String(userCount + 1).padStart(5, "0");
-
-      // Construct the userId
+    while (!userId) {
+      identifier = String(Math.floor(Math.random() * 100000)).padStart(5, "0");
       userId = prefix + identifier;
-
-      console.log("Generated userId:", userId); // Log generated userId
-
-      // Check if the userId already exists in the database
       const existingUser = await Senior.findOne({ userId });
-
-      if (!existingUser) {
-        // If userId doesn't exist, exit the loop
-        userIdExists = false;
+      if (existingUser) {
+        userId = null; // Reset userId if it already exists
       }
     }
 
@@ -58,15 +68,13 @@ const submitForm = async (req, res) => {
       formData.middleName,
       formData.lastName,
       formData.suffix,
-    ]
-      .filter(Boolean)
-      .join(" ");
+    ].filter(Boolean).join(" ");
 
     // Create a new user instance with the user data
     const newUser = new Senior({
       userId,
       password: hashedPassword,
-      name: fullName,
+      name: fullName
     });
 
     // Assign the createdBy field to the userId of the user who submitted the form
