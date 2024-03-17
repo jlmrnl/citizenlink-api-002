@@ -2,6 +2,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/LGUuserSchema');
 const Profile = require('../models/LGUprofileSchema');
+const Senior_records = require("../models/SeniorFormsSchema");
+const _4ps_records = require('../models/_4PsFormsSchema');
 
 let counters = {
     'reg1': 1,
@@ -12,8 +14,22 @@ let counters = {
 
 const registerUser = async (req, res) => {
     try {
-        const { firstName, middleName, lastName, suffix, accessLevel, accountStatus, barangay, password } = req.body;
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const { firstName, middleName, lastName, suffix, accessLevel, accountStatus, barangay, password, email } = req.body;
+        // Ensure email is provided and not null
+        if (!email || typeof email !== 'string') {
+            return res.status(400).json({ error: "Email is required" });
+        }
+
+        // Check if email exists in any of the schemas
+        const emailExists = await Promise.any([
+            _4ps_records.exists({ email }),
+            Senior_records.exists({ email }),
+            Profile.exists({ email })
+        ]);
+        if (emailExists) {
+            console.log('Email already exists'); // Log the message
+            return res.status(400).json({ error: "Email already exists" });
+        }
 
         // Determine prefix based on accessLevel and barangay
         let prefix = '';
@@ -68,13 +84,16 @@ const registerUser = async (req, res) => {
             lastName,
             suffix,
             accessLevel,
-            accountStatus
+            accountStatus,
+            email
         });
         await profile.save();
 
         // Create a new user document and associate it with the profile
+        const hashedPassword = await bcrypt.hash(password, 10); // Hash password
         const user = new User({
             userId,
+            email,
             password: hashedPassword,
             profile: profile._id, // Associate the user with the profile
         });
@@ -86,7 +105,6 @@ const registerUser = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-
 
 const loginUser = async (req, res) => {
     try {
