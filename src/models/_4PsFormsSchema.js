@@ -94,6 +94,11 @@ const _4PsFormsModelSchema = new mongoose.Schema({
   numberOfChild: {
     type: Number
   },
+  email: {
+    type: String,
+    required: true,
+    unique: true
+  },
   createdAt: {
     type: Date,
     default: Date.now
