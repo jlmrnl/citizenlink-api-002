@@ -14,6 +14,11 @@ const citizenSchema = new mongoose.Schema({
       name: {
         type: String
       },
+      email: {
+        type: String,
+        unique: true,
+        required: true
+      },
       records: {
         type: mongoose.Schema.Types.ObjectId,
         ref: '4ps records'

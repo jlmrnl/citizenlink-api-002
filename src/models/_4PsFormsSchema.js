@@ -57,7 +57,7 @@ const _4PsFormsModelSchema = new mongoose.Schema({
     required: true
   },
   dateOfBirth: {
-    type: Date,
+    type: Date
   },
   contactNumber: {
     type: String,
@@ -90,6 +90,9 @@ const _4PsFormsModelSchema = new mongoose.Schema({
   userId: {
     type: String,
     unique: true
+  },
+  numberOfChild: {
+    type: Number
   },
   createdAt: {
     type: Date,
