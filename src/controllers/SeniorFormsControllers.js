@@ -32,17 +32,26 @@ const submitForm = async (req, res) => {
       Senior_records.exists({ email }),
       Admin_profile.exists({ email })
     ]);
-
     if (emailExists) {
       console.log('Email already exists'); // Log the message
       return res.status(400).json({ error: "Email already exists" });
     }
-
     // Ignore null email values
     if (email === null) {
       console.log('Email is null, ignoring the record');
       return res.status(400).json({ error: "Email cannot be null" });
     }
+
+    const oscaId = formData.oscaId;
+    // Check if OSCA ID already exists
+    const oscaIdExists = await Promise.any([
+      Senior_records.exists({ oscaId })
+    ]);
+    if (oscaIdExists) {
+      console.log('OSCA ID already exists');
+      return res.status(400).json({ error: "OSCA ID Already Exists" });
+    }
+
 
     // Determine the prefix based on the barangay
     let prefix = "sen05-"; // Default prefix for seniors
