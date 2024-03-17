@@ -97,6 +97,11 @@ const SeniorFormsSchema = new mongoose.Schema({
     ref: "senior accounts",
     unique: true,
   },
+  email: {
+    type: String,
+    required: true,
+    unique: true
+  },
   createdAt: {
     type: Date,
     default: Date.now,
