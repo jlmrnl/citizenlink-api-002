@@ -18,11 +18,6 @@ const citizenSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'senior records'
       },
-      email: {
-        type: String,
-        unique: true,
-        required: true
-      },
       role: {
         type: String,
         enum: ['citizen'],
