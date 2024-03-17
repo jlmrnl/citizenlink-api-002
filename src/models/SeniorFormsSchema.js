@@ -5,15 +5,14 @@ const SeniorFormsSchema = new mongoose.Schema({
     type: String,
     required: true,
     enum: ["New", "Replacement"],
+    default: "New"
   },
-  idNumber: {
+  oscaId: {
     type: Number,
   },
-  medicineBookletNumber: {
-    type: Number,
-  },
-  purchaseDTIbooklet: {
-    type: Number,
+  isAlive: {
+    type: Boolean,
+    default: true
   },
   barangay: {
     type: String,
