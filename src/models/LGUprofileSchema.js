@@ -47,6 +47,11 @@ const profileSchema = new mongoose.Schema({
       type: String,
       enum: ['San Isidro Norte', 'Baybay Lopez']
     },
+    email: {
+      type: String,
+      required: true,
+      unique: true
+    },
     createdAt: {
       type: Date,
       default: Date.now
