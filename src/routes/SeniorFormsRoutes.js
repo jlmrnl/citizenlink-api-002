@@ -23,12 +23,18 @@ router.post(
   authenticateUser,
   extractUserIdFromToken,
   upload.single("picture"),
-  submitForm
+  (req, res) => submitForm(req, res, upload)
 );
 router.get("/entries", getAllEntries);
 router.get("/entries/:id", getEntryById);
-router.put("/entries/:id", updateEntry);
-router.delete("/entries/:id", deleteEntry);
+
+router.put(
+  "/entries/:id",  
+  updateEntry, 
+  upload.single("picture"),
+(req, res) => updateEntry(req, res, upload));
+
+router.delete("/entries/:id",  deleteEntry);
 
 router.post("/login", login);
 

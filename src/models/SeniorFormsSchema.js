@@ -9,6 +9,7 @@ const SeniorFormsSchema = new mongoose.Schema({
   },
   oscaId: {
     type: Number,
+    unique: true
   },
   isAlive: {
     type: Boolean,
@@ -90,7 +91,7 @@ const SeniorFormsSchema = new mongoose.Schema({
     ref: "lgu accounts",
   },
   picture: {
-    type: String, // Store the file path instead of using Buffer
+    type: String,
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,

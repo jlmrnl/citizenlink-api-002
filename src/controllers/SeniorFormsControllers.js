@@ -6,16 +6,21 @@ const Senior_records = require("../models/SeniorFormsSchema");
 const Senior = require("../models/seniorUserSchema");
 const _4ps_records = require('../models/_4PsFormsSchema');
 const Admin_profile = require('../models/LGUprofileSchema');
+const { configureMulter } = require('../utils/multerHelpers')
 const {
   handleServerError,
   handleNotFoundError,
 } = require("../utils/errorHelpers");
 
+const upload = configureMulter();
+
 const submitForm = async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
+  let session; // Declare session variable outside try-catch block
 
   try {
+    session = await mongoose.startSession();
+    session.startTransaction();
+
     const formData = req.body;
     const createdBy = req.name;
     const hashedPassword = await bcrypt.hash("123", 10);
@@ -33,9 +38,10 @@ const submitForm = async (req, res) => {
       Admin_profile.exists({ email })
     ]);
     if (emailExists) {
-      console.log('Email already exists'); // Log the message
+      console.log('Email already exists');
       return res.status(400).json({ error: "Email already exists" });
     }
+
     // Ignore null email values
     if (email === null) {
       console.log('Email is null, ignoring the record');
@@ -44,14 +50,11 @@ const submitForm = async (req, res) => {
 
     const oscaId = formData.oscaId;
     // Check if OSCA ID already exists
-    const oscaIdExists = await Promise.any([
-      Senior_records.exists({ oscaId })
-    ]);
+    const oscaIdExists = await Senior_records.exists({ oscaId });
     if (oscaIdExists) {
       console.log('OSCA ID already exists');
       return res.status(400).json({ error: "OSCA ID Already Exists" });
     }
-
 
     // Determine the prefix based on the barangay
     let prefix = "sen05-"; // Default prefix for seniors
@@ -91,24 +94,43 @@ const submitForm = async (req, res) => {
     formData.user = newUser._id;
     formData.userId = userId;
 
-    // Create a new form instance with the form data
-    const newForm = new Senior_records(formData);
-    await newForm.save({ session });
+    // Multer middleware for handling picture upload
+    upload.single('picture')(req, res, async (err) => {
+      if (err) {
+        console.error(err);
+        return res.status(400).json({ error: 'Failed to upload picture' });
+      }
 
-    // Store the ObjectId of the created senior form record in the records field of the user
-    newUser.records = newForm._id;
-    await newUser.save({ session });
+      // Add picture field to formData
+      formData.picture = req.file ? req.file.path : null;
 
-    console.log(`${createdBy} created a record`);
-    await session.commitTransaction();
-    res.status(201).json(newForm);
+      try {
+        // Create a new form instance with the form data
+        const newForm = new Senior_records(formData);
+        await newForm.save({ session });
+
+        // Store the ObjectId of the created senior form record in the records field of the user
+        newUser.records = newForm._id;
+        await newUser.save({ session });
+
+        console.log(`${createdBy} created a record`);
+        await session.commitTransaction();
+        res.status(201).json(newForm);
+      } catch (error) {
+        await session.abortTransaction();
+        handleServerError(res, error);
+      } finally {
+        session.endSession();
+      }
+    });
   } catch (error) {
-    await session.abortTransaction();
     handleServerError(res, error);
-  } finally {
-    session.endSession();
+    if (session) {
+      session.endSession();
+    }
   }
 };
+
 
 const getAllEntries = async (req, res) => {
   try {
@@ -133,15 +155,27 @@ const getEntryById = async (req, res) => {
 
 const updateEntry = async (req, res) => {
   try {
-    const updatedFormEntry = await Senior_records.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
-    if (!updatedFormEntry) {
-      return handleNotFoundError(res, "Form entry not found");
-    }
-    res.status(200).json(updatedFormEntry);
+    upload.single('picture')(req, res, async (err) => {
+      if (err) {
+        console.error(err);
+        return res.status(400).json({ error: 'Failed to upload picture' });
+      }
+
+      // Check if picture is uploaded and update req.body with picture path
+      if (req.file) {
+        req.body.picture = req.file.path;
+      }
+
+      const updatedFormEntry = await Senior_records.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        { new: true }
+      );
+      if (!updatedFormEntry) {
+        return handleNotFoundError(res, "Form entry not found");
+      }
+      res.status(200).json(updatedFormEntry);
+    });
   } catch (error) {
     handleServerError(res, error);
   }
