@@ -72,7 +72,8 @@ const forgotPassword = async (req, res) => {
 
 
 const resetPassword = async (req, res) => {
-    const { resetToken, newPassword } = req.body;
+    const { resetToken } = req.params; // Retrieve reset token from route parameters
+    const { newPassword } = req.body;
 
     try {
         // Decode the reset token to retrieve the userId
@@ -123,6 +124,5 @@ const resetPassword = async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 };
-
 
 module.exports = { forgotPassword, resetPassword };

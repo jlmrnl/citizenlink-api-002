@@ -6,6 +6,6 @@ const {
 } = require("../controllers/SMTP");
 
 router.post('/forgot-password', forgotPassword);
-router.post('/reset-password', resetPassword);
+router.post('/reset-password/:resetToken', resetPassword);
 
 module.exports = router;
