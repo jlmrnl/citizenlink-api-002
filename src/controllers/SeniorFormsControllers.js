@@ -176,19 +176,41 @@ const updateEntry = async (req, res) => {
       // Check if picture is uploaded and update req.body with picture path
       if (req.file) {
         req.body.picture = req.file.path;
-      }
 
-      const updatedFormEntry = await Senior_records.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        { new: true }
-      );
-      if (!updatedFormEntry) {
-        return handleNotFoundError(res, "Form entry not found");
+        try {
+          const updatedFormEntry = await Senior_records.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true }
+          );
+          if (!updatedFormEntry) {
+            return handleNotFoundError(res, "Form entry not found");
+          }
+          res.status(200).json(updatedFormEntry);
+        } catch (error) {
+          // Handle database update error
+          return handleServerError(res, error);
+        }
+      } else {
+        // If no file was uploaded, proceed with updating the form entry without the picture
+        try {
+          const updatedFormEntry = await Senior_records.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true }
+          );
+          if (!updatedFormEntry) {
+            return handleNotFoundError(res, "Form entry not found");
+          }
+          res.status(200).json(updatedFormEntry);
+        } catch (error) {
+          // Handle database update error
+          return handleServerError(res, error);
+        }
       }
-      res.status(200).json(updatedFormEntry);
     });
   } catch (error) {
+    // Handle unexpected errors
     handleServerError(res, error);
   }
 };

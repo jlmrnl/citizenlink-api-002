@@ -5,6 +5,7 @@ const cors = require('cors');
 const Senior = require('./src/routes/SeniorFormsRoutes');
 const FourPs = require('./src/routes/_4PsFormsRoutes');
 const authRoutes = require('./src/routes/authRoutes');
+const SMTP = require('./src/routes/SMTPRoutes')
 const { connectToMongoDB } = require('./src/config/mongodbConfig');
 const { handleMongoDBError } = require('./src/utils/errorHelpers');
 
@@ -17,7 +18,8 @@ app.use(bodyParser.json());
 
 app.use('/api/senior', Senior);
 app.use('/api/4ps', FourPs);
-app.use('/api/lgu', authRoutes); //binago ko itooo
+app.use('/api/lgu', authRoutes);
+app.use('/api/smtp', SMTP);
 app.use('/uploads', express.static('uploads'));
 
 connectToMongoDB()
