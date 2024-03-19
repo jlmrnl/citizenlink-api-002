@@ -106,35 +106,27 @@ const submitForm = async (req, res) => {
     formData.user = newUser._id;
     formData.userId = userId;
 
-    // Multer middleware for handling picture upload
-    upload.single('picture')(req, res, async (err) => {
-      if (err) {
-        console.error(err);
-        return res.status(400).json({ error: 'Failed to upload picture' });
-      }
+    // Add picture field to formData
+    formData.picture = req.file ? req.file.path : null;
 
-      // Add picture field to formData
-      formData.picture = req.file ? req.file.path : null;
+    try {
+      // Create a new form instance with the form data
+      const newForm = new Senior_records(formData);
+      await newForm.save({ session });
 
-      try {
-        // Create a new form instance with the form data
-        const newForm = new Senior_records(formData);
-        await newForm.save({ session });
+      // Store the ObjectId of the created senior form record in the records field of the user
+      newUser.records = newForm._id;
+      await newUser.save({ session });
 
-        // Store the ObjectId of the created senior form record in the records field of the user
-        newUser.records = newForm._id;
-        await newUser.save({ session });
-
-        console.log(`${createdBy} created a record`);
-        await session.commitTransaction();
-        res.status(201).json(newForm);
-      } catch (error) {
-        await session.abortTransaction();
-        handleServerError(res, error);
-      } finally {
-        session.endSession();
-      }
-    });
+      console.log(`${createdBy} created a record`);
+      await session.commitTransaction();
+      res.status(201).json(newForm);
+    } catch (error) {
+      await session.abortTransaction();
+      handleServerError(res, error);
+    } finally {
+      session.endSession();
+    }
   } catch (error) {
     handleServerError(res, error);
     if (session) {
