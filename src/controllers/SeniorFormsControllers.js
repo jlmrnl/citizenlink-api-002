@@ -15,7 +15,7 @@ const {
 const upload = configureMulter();
 
 const submitForm = async (req, res) => {
-  let session; // Declare session variable outside try-catch block
+  let session;
 
   try {
     session = await mongoose.startSession();

@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 const path = require("path");
-const { login, changePassword } = require("../controllers/SeniorAuthControllers");
+const { login } = require("../controllers/SeniorAuthControllers");
+const { changePassword } =  require('../controllers/citizenAuth');
 const {
   submitForm,
   getAllEntries,

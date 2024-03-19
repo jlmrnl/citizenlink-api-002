@@ -7,7 +7,8 @@ const {
   updateFormById,
   deleteFormById,
 } = require("../controllers/_4PsFormsControllers");
-const { login, changePassword, getAllUsers } = require("../controllers/_4PsAuthControllers");
+const { login, getAllUsers } = require("../controllers/_4PsAuthControllers");
+const { changePassword } =  require('../controllers/citizenAuth');
 const authenticateUser = require("../middleware/authMiddleware");
 const extractUserIdFromToken = require("../middleware/jwtMiddleware");
 
