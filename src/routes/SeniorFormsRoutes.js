@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 const path = require("path");
-const { login } = require("../controllers/SeniorAuthControllers");
+const { login, changePassword } = require("../controllers/SeniorAuthControllers");
 const {
   submitForm,
   getAllEntries,
@@ -14,10 +14,8 @@ const { configureMulter } = require("../utils/multerHelpers");
 const authenticateUser = require("../middleware/authMiddleware");
 const extractUserIdFromToken = require("../middleware/jwtMiddleware");
 
-// Multer configuration
 const upload = configureMulter();
 
-// Routes
 router.post(
   "/submit",
   authenticateUser,
@@ -27,15 +25,14 @@ router.post(
 );
 router.get("/entries", getAllEntries);
 router.get("/entries/:id", getEntryById);
-
 router.put(
   "/entries/:id",  
   updateEntry, 
   upload.single("picture"),
 (req, res) => updateEntry(req, res, upload));
-
 router.delete("/entries/:id",  deleteEntry);
 
 router.post("/login", login);
+router.put('/change-password', authenticateUser, changePassword);
 
 module.exports = router;

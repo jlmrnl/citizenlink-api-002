@@ -62,15 +62,27 @@ const submitForm = async (req, res) => {
       prefix = "sen30-";
     }
 
-    // Generate a unique userId
+    let userIdExists = true;
     let userId;
     let identifier;
-    while (!userId) {
-      identifier = String(Math.floor(Math.random() * 100000)).padStart(5, "0");
+
+    // Keep generating unique userIds until one doesn't exist in the database
+    while (userIdExists) {
+      // Generate the next unique identifier
+      const userCount = await Senior.countDocuments();
+      identifier = String(userCount + 1).padStart(5, "0");
+
+      // Construct the userId
       userId = prefix + identifier;
+
+      console.log("Generated userId:", userId); // Log generated userId
+
+      // Check if the userId already exists in the database
       const existingUser = await Senior.findOne({ userId });
-      if (existingUser) {
-        userId = null; // Reset userId if it already exists
+
+      if (!existingUser) {
+        // If userId doesn't exist, exit the loop
+        userIdExists = false;
       }
     }
 

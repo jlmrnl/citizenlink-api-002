@@ -103,6 +103,10 @@ const SeniorFormsSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
+  userId: {
+    type: String,
+    unique: true
+  },
   createdAt: {
     type: Date,
     default: Date.now,
