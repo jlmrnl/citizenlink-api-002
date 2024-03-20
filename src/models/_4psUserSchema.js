@@ -10,8 +10,7 @@ const citizenSchema = new mongoose.Schema({
       },
       password: {
         type: String,
-        required: true,
-        maxlength: 100
+        required: true
       },
       name: {
         type: String,
