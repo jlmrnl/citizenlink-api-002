@@ -1,11 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const {
-  forgotPassword,
-  resetPassword
-} = require("../controllers/SMTP");
+const { forgotPassword, resetPassword } = require("../controllers/SMTP");
 
-router.post('/forgot-password', forgotPassword);
-router.post('/reset-password/:resetToken', resetPassword);
+router.post("/forgot-password", forgotPassword);
+router.post("/reset-password/:resetIdentifier", resetPassword); // Change resetToken to resetIdentifier
 
 module.exports = router;
