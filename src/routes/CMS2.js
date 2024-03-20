@@ -1,5 +1,3 @@
-// route.js
-
 const express = require("express");
 const router = express.Router();
 const authenticateUser = require("../middleware/authMiddleware");
@@ -10,7 +8,7 @@ const {
   getLinkById,
   updateLink,
   deleteLink,
-} = require("../controllers/CMS");
+} = require("../controllers/CMS2");
 
 // Routes
 router.post("/add", createLink);

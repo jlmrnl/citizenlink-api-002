@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const linkSchema = new mongoose.Schema({
+const linkSchema2 = new mongoose.Schema({
   link: {
     type: String,
     maxlength: 255,
@@ -16,6 +16,6 @@ const linkSchema = new mongoose.Schema({
   },
 });
 
-const linkModel = mongoose.model("Links", linkSchema);
+const linkModel2 = mongoose.model("Links2", linkSchema2);
 
-module.exports = linkModel;
+module.exports = linkModel2;
