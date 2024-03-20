@@ -2,11 +2,12 @@ const mongoose = require('mongoose');
 
 const linkSchema = new mongoose.Schema ({
     link: {
-        type: String
+        type: String,
+        maxlength: 255
     },
     description: {
         type: String,
-        min: 100
+        maxlength: 100
     },
     createdAt: {
         type: Date,

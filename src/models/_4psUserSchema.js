@@ -10,10 +10,12 @@ const citizenSchema = new mongoose.Schema({
       },
       password: {
         type: String,
-        required: true
+        required: true,
+        maxlength: 100
       },
       name: {
-        type: String
+        type: String,
+        maxlength: 50
       },
       records: {
         type: mongoose.Schema.Types.ObjectId,

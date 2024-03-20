@@ -9,7 +9,8 @@ const SeniorFormsSchema = new mongoose.Schema({
   },
   oscaId: {
     type: Number,
-    unique: true
+    unique: true,
+    maxlength: 4
   },
   isAlive: {
     type: Boolean,
@@ -23,20 +24,27 @@ const SeniorFormsSchema = new mongoose.Schema({
   firstName: {
     type: String,
     required: true,
+    maxlength: 50
   },
   middleName: {
     type: String,
+    maxlength: 50
   },
   lastName: {
     type: String,
     required: true,
+    maxlength: 50
   },
   suffix: {
-    type: String
+    type: String,
+    maxlength: 11
   },
   age: {
     type: Number,
     required: true,
+    max: 125,
+    min: 60,
+    maxlength: 3
   },
   sex: {
     type: String,
@@ -58,18 +66,22 @@ const SeniorFormsSchema = new mongoose.Schema({
   },
   placeOfBirth: {
     type: String,
+    maxlength: 50
   },
   address: {
     type: String,
     required: true,
+    maxlength: 100
   },
   contactPerson: {
     type: String,
     required: true,
+    maxlength: 50
   },
   contactNumber: {
     type: Number,
     required: true,
+    maxlength: 11
   },
   applicationStatus: {
     type: String,
@@ -101,7 +113,8 @@ const SeniorFormsSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
+    maxlength: 50
   },
   userId: {
     type: String,
