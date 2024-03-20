@@ -87,7 +87,6 @@ const registerUser = async (req, res) => {
             accountStatus,
             email
         });
-        await profile.save();
 
         // Create a new user document and associate it with the profile
         const hashedPassword = await bcrypt.hash(password, 10); // Hash password
@@ -98,7 +97,10 @@ const registerUser = async (req, res) => {
             profile: profile._id, // Associate the user with the profile
         });
 
+        // No errors occurred, now save the profile and user
+        await profile.save();
         await user.save();
+        
         res.status(201).json({ message: "User registered successfully", userId });
         console.log("userId: ", userId)
     } catch (error) {
