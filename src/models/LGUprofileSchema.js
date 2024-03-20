@@ -3,21 +3,26 @@ const mongoose = require('mongoose');
 const profileSchema = new mongoose.Schema({
     firstName: {
       type: String,
-      required: true
+      required: true,
+      maxlength: 50
     },
     lastName: {
       type: String,
-      required: true
+      required: true,
+      maxlength: 50
     },
     middleName: {
-      type: String
+      type: String,
+      maxlength: 50
     },
     suffix:{
-      type: String
+      type: String,
+      maxlength: 11
     },
     position: {
       type: String,
-      default: 'NA'
+      default: 'NA',
+      maxlength: 16
     },
     dateOfBirth: {
       type: String
@@ -50,7 +55,8 @@ const profileSchema = new mongoose.Schema({
     email: {
       type: String,
       required: true,
-      unique: true
+      unique: true,
+      maxlength: 50
     },
     createdAt: {
       type: Date,

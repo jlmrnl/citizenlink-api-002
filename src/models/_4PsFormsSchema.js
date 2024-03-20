@@ -3,17 +3,21 @@ const mongoose = require('mongoose');
 const _4PsFormsModelSchema = new mongoose.Schema({
   surname: {
     type: String,
-    required: true
+    required: true,
+    maxlength: 50
   },
   firstname: {
     type: String,
-    required: true
+    required: true,
+    maxlength: 50
   },
   middlename: {
-    type: String
+    type: String,
+    maxlength: 50
   },
   suffix: {
-    type: String
+    type: String,
+    maxlength: 11
   },
   sex:{
     type: String,
@@ -21,15 +25,18 @@ const _4PsFormsModelSchema = new mongoose.Schema({
     required: true
   },
   placeOfBirth: {
-    type: String
+    type: String,
+    maxlength: 50
   },
   houseNumber: {
     type: Number,
-    required: true
+    required: true,
+    maxlength: 5
   },
   street: {
     type: String,
-    required: true
+    required: true,
+    maxlength: 50
   },
   barangay: {
     type: String,
@@ -54,14 +61,16 @@ const _4PsFormsModelSchema = new mongoose.Schema({
   postal: {
     type: String,
     default: '2417',
-    required: true
+    required: true,
+    maxlength: 4
   },
   dateOfBirth: {
     type: Date
   },
   contactNumber: {
     type: String,
-    required: true
+    required: true,
+    maxlength: 11
   },
   applicationStatus: {
     type: String,
@@ -92,12 +101,14 @@ const _4PsFormsModelSchema = new mongoose.Schema({
     unique: true
   },
   numberOfChild: {
-    type: Number
+    type: Number,
+    maxlength: 3
   },
   email: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
+    maxlength: 50
   },
   createdAt: {
     type: Date,
