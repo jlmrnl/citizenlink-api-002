@@ -111,7 +111,7 @@ const _4PsFormsModelSchema = new mongoose.Schema({
     maxlength: 50,
   },
   createdAt: {
-    type: String,
+    type: Date,
     default: Date.now,
   },
 });

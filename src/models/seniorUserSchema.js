@@ -10,7 +10,6 @@ const citizenSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
-    maxlength: 50,
   },
   name: {
     type: String,
@@ -26,7 +25,7 @@ const citizenSchema = new mongoose.Schema({
     default: "citizen",
   },
   createdAt: {
-    type: String,
+    type: Date,
     default: Date.now,
   },
 });

@@ -10,8 +10,7 @@ const userSchema = new mongoose.Schema({
      },
      password: {
        type: String,
-       required: true,
-       maxlength: 50
+       required: true
      },
      profile: {
          type: mongoose.Schema.Types.ObjectId,

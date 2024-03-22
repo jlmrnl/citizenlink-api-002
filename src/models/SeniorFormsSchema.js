@@ -120,7 +120,7 @@ const SeniorFormsSchema = new mongoose.Schema({
     unique: true,
   },
   createdAt: {
-    type: String,
+    type: Date,
     default: Date.now,
   },
 });
