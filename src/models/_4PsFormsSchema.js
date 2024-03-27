@@ -88,6 +88,7 @@ const _4PsFormsModelSchema = new mongoose.Schema({
       "rejected",
       "approved",
       "updated",
+      "register online"
     ],
   },
   createdBy: {

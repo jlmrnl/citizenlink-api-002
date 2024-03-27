@@ -95,6 +95,7 @@ const SeniorFormsSchema = new mongoose.Schema({
       "rejected",
       "approved",
       "updated",
+      "registered online"
     ],
   },
   createdBy: {
