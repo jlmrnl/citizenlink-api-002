@@ -18,7 +18,6 @@ router.get("/forms/:id", getFormById);
 router.put("/forms/:id", updateFormById);
 router.delete("/forms/:id", deleteFormById);
 
-router.post("/register-online", submitForm);
 router.post("/login", login);
 router.put('/change-password', authenticateUser, changePassword);
 router.get("/users", getAllUsers);

@@ -103,7 +103,6 @@ const submitForm = async (req, res) => {
       newUser.records = newForm._id;
       await newUser.save({ session });
 
-      const recipient = email;
       console.log(`${createdBy} created a record`);
 
       // Construct the HTML content for the email

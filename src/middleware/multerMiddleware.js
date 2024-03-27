@@ -1,36 +1,38 @@
 const multer = require('multer');
-const fs = require('fs').promises;
+const fs = require('fs');
 
-const configureMulter = () => {
-  const storage = multer.diskStorage({
-    destination: async function (req, file, cb) {
-      const uploadPath = 'uploads/';
-      try {
-        await fs.mkdir(uploadPath, { recursive: true });
-        // If directory creation is successful, call the callback function with null error
-        cb(null, uploadPath);
-      } catch (error) {
-        // If an error occurs during directory creation, pass the error to the callback function
-        cb(error instanceof Error ? error : new Error('Failed to create upload directory'));
+// Multer configuration
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadFolder = 'uploads/';
+    // Create the uploads folder if it doesn't exist
+    fs.mkdir(uploadFolder, { recursive: true }, (err) => {
+      if (err) {
+        console.error('Error creating uploads directory:', err);
       }
-    },
-    filename: function (req, file, cb) {
-      const fileName = `${Date.now()}_${file.originalname}`;
-      cb(null, fileName);
-    }
-  });
+      cb(null, uploadFolder); // Set destination to uploads folder
+    });
+  },
+  filename: function (req, file, cb) {
+    // Use current timestamp as filename to ensure uniqueness
+    cb(null, Date.now() + '_' + file.originalname);
+  }
+});
 
-  return multer({ 
-    storage: storage,
-    fileFilter: (req, file, cb) => {
-      // Ensure only certain file types are allowed, adjust this as needed
-      if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
-        cb(null, true);
-      } else {
-        cb(new Error('Invalid file type. Only JPEG and PNG files are allowed.'));
-      }
-    }
-  });
+// Define file filter to accept only certain file types
+const fileFilter = function (req, file, cb) {
+  // Accept only JPEG and PNG files
+  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+    cb(null, true); // Accept file
+  } else {
+    cb(new Error('Invalid file type. Only JPEG and PNG files are allowed.')); // Reject file
+  }
 };
 
-module.exports = { configureMulter };
+// Initialize Multer with configuration
+const upload = multer({ 
+  storage: storage,
+  fileFilter: fileFilter
+});
+
+module.exports = upload;
