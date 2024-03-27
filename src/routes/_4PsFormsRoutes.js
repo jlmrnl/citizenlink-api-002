@@ -1,4 +1,5 @@
 const express = require("express");
+const upload = require('../middleware/multerMiddleware');
 const router = express.Router();
 const {
   submitForm,
@@ -12,10 +13,23 @@ const { changePassword } =  require('../controllers/citizenAuth');
 const authenticateUser = require("../middleware/authMiddleware");
 const extractUserIdFromToken = require("../middleware/jwtMiddleware");
 
-router.post("/submit", authenticateUser, extractUserIdFromToken, submitForm);
+router.post(
+  "/submit",
+  extractUserIdFromToken,
+  upload.fields([
+    { name: '_1x1Picture', maxCount: 1 },
+    { name: 'validDocs', maxCount: 1 }
+  ]),
+  (req, res) => submitForm(req, res, upload)
+);
 router.get("/forms", getAllForms);
 router.get("/forms/:id", getFormById);
-router.put("/forms/:id", updateFormById);
+router.put("/forms/:id", updateFormById, 
+  upload.fields([
+  { name: '_1x1Picture', maxCount: 1 },
+  { name: 'validDocs', maxCount: 1 }
+]),
+(req, res) => submitForm(req, res, upload));
 router.delete("/forms/:id", deleteFormById);
 
 router.post("/login", login);

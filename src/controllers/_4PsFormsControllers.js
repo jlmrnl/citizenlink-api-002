@@ -18,6 +18,22 @@ const submitForm = async (req, res) => {
     session.startTransaction();
 
     const formData = req.body;
+
+    // Initialize variables to store file paths
+    let _1x1PicturePath = null;
+    let validDocsPath = null;
+    // Check if the '1x1Picture' field exists in req.files
+    if (req.files && req.files['_1x1Picture'] && req.files['_1x1Picture'][0] && req.files['_1x1Picture'][0].path) {
+      _1x1PicturePath = req.files['_1x1Picture'][0].path;
+    }
+    // Check if the 'validDocs' field exists in req.files
+    if (req.files && req.files['validDocs'] && req.files['validDocs'][0] && req.files['validDocs'][0].path) {
+      validDocsPath = req.files['validDocs'][0].path;
+    }
+    // Populate formData with paths of uploaded files
+    formData._1x1Picture = _1x1PicturePath;
+    formData.validDocs = validDocsPath;
+    
     const createdBy = req.name;
     const email = formData.email;
     const hashedPassword = await bcrypt.hash("123", 10);

@@ -47,16 +47,19 @@ const _4PsFormsModelSchema = new mongoose.Schema({
     type: String,
     default: "Binmaley",
     required: true,
+    default: 'Binmaley'
   },
   province: {
     type: String,
     enum: ["Pangasinan"],
     required: true,
+    default: 'Pangasinan'
   },
   region: {
     type: String,
     enum: ["Region 1"],
     required: true,
+    default: 'Region 1'
   },
   postal: {
     type: String,
@@ -90,6 +93,12 @@ const _4PsFormsModelSchema = new mongoose.Schema({
   createdBy: {
     type: String,
     ref: "lgu accounts",
+  },
+  _1x1Picture: {
+    type: String,
+  },
+  validDocs: {
+    type: String,
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,
