@@ -7,7 +7,7 @@ const Senior_records = require("../models/SeniorFormsSchema");
 const Senior = require("../models/seniorUserSchema");
 const _4ps_records = require('../models/_4PsFormsSchema');
 const Admin_profile = require('../models/LGUprofileSchema');
-const upload = require('../middleware/multerMiddleware');
+const multerMiddleware = require('../middleware/multerMiddleware');
 const {
   handleServerError,
   handleNotFoundError,
@@ -20,122 +20,129 @@ const submitForm = async (req, res) => {
     session = await mongoose.startSession();
     session.startTransaction();
     
-    const formData = req.body;
-    const createdBy = req.name;
-    const email = formData.email;
-    const oscaId = formData.oscaId;
-    const hashedPassword = await bcrypt.hash("123", 10);
-
-    // Check if email exists in any of the schemas
-    const emailExists = await Promise.any([
-      _4ps_records.exists({ email }),
-      Senior_records.exists({ email }),
-      Admin_profile.exists({ email })
-    ]);
-    // Ensure email is provided and not null
-    if (!email || typeof email !== 'string') {
-      return res.status(400).json({ error: "Email is required" });
-    }
-    if (emailExists) {
-      console.log('Email already exists');
-      return res.status(400).json({ error: "Email already exists" });
-    }
-
-    // Ignore null email values
-    if (email === null) {
-      console.log('Email is null, ignoring the record');
-      return res.status(400).json({ error: "Email cannot be null" });
-    }
-
-    const oscaIdExists = await Senior_records.exists({ oscaId });
-    if (oscaIdExists) {
-      console.log('OSCA ID already exists');
-      return res.status(400).json({ error: "OSCA ID Already Exists" });
-    }
-
-    // Determine the prefix based on the barangay
-    let prefix = "sen05-"; // Default prefix for seniors
-    if (formData.barangay === "San Isidro Norte") {
-      prefix = "sen30-";
-    }
-
-    let userIdExists = true;
-    let userId;
-    let identifier;
-
-    // Keep generating unique userIds until one doesn't exist in the database
-    while (userIdExists) {
-      // Generate the next unique identifier
-      const userCount = await Senior.countDocuments();
-      identifier = String(userCount + 1).padStart(5, "0");
-
-      // Construct the userId
-      userId = prefix + identifier;
-
-      console.log("Generated userId:", userId); // Log generated userId
-
-      // Check if the userId already exists in the database
-      const existingUser = await Senior.findOne({ userId });
-
-      if (!existingUser) {
-        // If userId doesn't exist, exit the loop
-        userIdExists = false;
+    // Multer middleware to handle file uploads
+    multerMiddleware(req, res, async (err) => {
+      if (err) {
+        return res.status(400).json({ error: err.message });
       }
-    }
 
-    // Combine name fields
-    const fullName = [
-      formData.firstName,
-      formData.middleName,
-      formData.lastName,
-      formData.suffix,
-    ].filter(Boolean).join(" ");
+      const formData = req.body;
+      const createdBy = req.name;
+      const email = formData.email;
+      const oscaId = formData.oscaId;
+      const hashedPassword = await bcrypt.hash("123", 10);
 
-    // Create a new user instance with the user data
-    const newUser = new Senior({
-      userId,
-      password: hashedPassword,
-      name: fullName
+      // Check if email exists in any of the schemas
+      const emailExists = await Promise.any([
+        _4ps_records.exists({ email }),
+        Senior_records.exists({ email }),
+        Admin_profile.exists({ email })
+      ]);
+      // Ensure email is provided and not null
+      if (!email || typeof email !== 'string') {
+        return res.status(400).json({ error: "Email is required" });
+      }
+      if (emailExists) {
+        console.log('Email already exists');
+        return res.status(400).json({ error: "Email already exists" });
+      }
+
+      // Ignore null email values
+      if (email === null) {
+        console.log('Email is null, ignoring the record');
+        return res.status(400).json({ error: "Email cannot be null" });
+      }
+
+      const oscaIdExists = await Senior_records.exists({ oscaId });
+      if (oscaIdExists) {
+        console.log('OSCA ID already exists');
+        return res.status(400).json({ error: "OSCA ID Already Exists" });
+      }
+
+      // Determine the prefix based on the barangay
+      let prefix = "sen05-"; // Default prefix for seniors
+      if (formData.barangay === "San Isidro Norte") {
+        prefix = "sen30-";
+      }
+
+      let userIdExists = true;
+      let userId;
+      let identifier;
+
+      // Keep generating unique userIds until one doesn't exist in the database
+      while (userIdExists) {
+        // Generate the next unique identifier
+        const userCount = await Senior.countDocuments();
+        identifier = String(userCount + 1).padStart(5, "0");
+
+        // Construct the userId
+        userId = prefix + identifier;
+
+        console.log("Generated userId:", userId); // Log generated userId
+
+        // Check if the userId already exists in the database
+        const existingUser = await Senior.findOne({ userId });
+
+        if (!existingUser) {
+          // If userId doesn't exist, exit the loop
+          userIdExists = false;
+        }
+      }
+
+      // Combine name fields
+      const fullName = [
+        formData.firstName,
+        formData.middleName,
+        formData.lastName,
+        formData.suffix,
+      ].filter(Boolean).join(" ");
+
+      // Create a new user instance with the user data
+      const newUser = new Senior({
+        userId,
+        password: hashedPassword,
+        name: fullName
+      });
+
+      // Assign the createdBy field to the userId of the user who submitted the form
+      formData.createdBy = createdBy;
+      formData.user = newUser._id;
+      formData.userId = userId;
+      
+      try {
+        // Create a new form instance with the form data
+        const newForm = new Senior_records(formData);
+        await newForm.save({ session });
+
+        // Store the ObjectId of the created senior form record in the records field of the user
+        newUser.records = newForm._id;
+        await newUser.save({ session });
+
+        console.log(`${createdBy} created a record`);
+
+        // Construct the HTML content for the email
+        const html = `
+          <p>Your registration was successful.</p>
+          <p>Name: ${fullName}</p>
+          <p>UserID: ${userId}</p>
+        `;
+
+        // Send the email
+        await sendEmail(
+          email,
+          "CitizenLink Registration for Senior Citizen",
+          html
+        );
+      
+        await session.commitTransaction();
+        res.status(201).json(newForm);
+      } catch (error) {
+        await session.abortTransaction();
+        handleServerError(res, error);
+      } finally {
+        session.endSession();
+      }
     });
-
-    // Assign the createdBy field to the userId of the user who submitted the form
-    formData.createdBy = createdBy;
-    formData.user = newUser._id;
-    formData.userId = userId;
-
-    try {
-      // Create a new form instance with the form data
-      const newForm = new Senior_records(formData);
-      await newForm.save({ session });
-
-      // Store the ObjectId of the created senior form record in the records field of the user
-      newUser.records = newForm._id;
-      await newUser.save({ session });
-
-      console.log(`${createdBy} created a record`);
-
-      // Construct the HTML content for the email
-      const html = `
-        <p>Your registration was successful.</p>
-        <p>Name: ${fullName}</p>
-        <p>UserID: ${userId}</p>
-      `;
-
-      // Send the email
-      await sendEmail(
-        email,
-        "CitizenLink Registration for Senior Citizen",
-        html
-      );
-    
-      await session.commitTransaction();
-      res.status(201).json(newForm);
-    } catch (error) {
-      await session.abortTransaction();
-      handleServerError(res, error);
-    } finally {
-      session.endSession();
-    }
   } catch (error) {
     handleServerError(res, error);
     if (session) {
