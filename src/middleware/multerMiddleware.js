@@ -11,7 +11,7 @@ const configureMulter = () => {
         cb(null, uploadPath);
       } catch (error) {
         // If an error occurs during directory creation, pass the error to the callback function
-        cb(error);
+        cb(error instanceof Error ? error : new Error('Failed to create upload directory'));
       }
     },
     filename: function (req, file, cb) {

@@ -4,24 +4,25 @@ const _4ps_records = require("../models/_4PsFormsSchema");
 const _4ps = require("../models/_4psUserSchema");
 const Senior_records = require("../models/SeniorFormsSchema");
 const Admin_profile = require('../models/LGUprofileSchema');
+const { sendEmail } = require('../middleware/nodemailerMiddleware');
 const {
   handleServerError,
   handleNotFoundError,
 } = require("../utils/errorHelpers");
 
 const submitForm = async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
+  let session;
 
   try {
+    session = await mongoose.startSession();
+    session.startTransaction();
+
     const formData = req.body;
     const createdBy = req.name;
-
-    // Auto-generate password "123"
+    const email = formData.email;
     const hashedPassword = await bcrypt.hash("123", 10);
 
     // Ensure email is provided and not null
-    const email = formData.email;
     if (!email || typeof email !== 'string') {
       return res.status(400).json({ error: "Email is required" });
     }
@@ -33,9 +34,10 @@ const submitForm = async (req, res) => {
       Admin_profile.exists({ email })
     ]);
     if (emailExists) {
-      console.log('Email already exists'); // Log the message
+      console.log('Email already exists');
       return res.status(400).json({ error: "Email already exists" });
     }
+
     // Ignore null email values
     if (email === null) {
       console.log('Email is null, ignoring the record');
@@ -43,7 +45,7 @@ const submitForm = async (req, res) => {
     }
 
     // Determine the prefix based on the barangay
-    let prefix = "4ps05-";
+    let prefix = "4ps05-"; 
     if (formData.barangay === "San Isidro Norte") {
       prefix = "4ps30-";
     }
@@ -76,21 +78,15 @@ const submitForm = async (req, res) => {
     const fullName = [
       formData.firstname,
       formData.middlename,
-      formData.surname,
+      formData.lastname,
       formData.suffix,
-    ]
-      .filter(Boolean)
-      .join(" ");
-
-    // Format date of birth to exclude time part
-    const formattedDateOfBirth = new Date(formData.dateOfBirth).toISOString().split('T')[0];
+    ].filter(Boolean).join(" ");
 
     // Create a new user instance with the user data
     const newUser = new _4ps({
       userId,
       password: hashedPassword,
-      name: fullName,
-      dateOfBirth: formattedDateOfBirth // Assign formatted date of birth
+      name: fullName
     });
 
     // Assign the createdBy field to the userId of the user who submitted the form
@@ -98,32 +94,47 @@ const submitForm = async (req, res) => {
     formData.user = newUser._id;
     formData.userId = userId;
 
-    // Create a new form instance with the form data
-    const newForm = new _4ps_records(formData);
+    try {
+      // Create a new form instance with the form data
+      const newForm = new _4ps_records(formData);
+      await newForm.save({ session });
 
-    // Store the ObjectId of the created 4Ps record in the records field of the user
-    newUser.records = newForm._id;
+      // Store the ObjectId of the created senior form record in the records field of the user
+      newUser.records = newForm._id;
+      await newUser.save({ session });
 
-    await newForm.save({ session });
+      const recipient = email;
+      console.log(`${createdBy} created a record`);
 
-    // Store the ObjectId of the created senior form record in the records field of the user
-    newUser.records = newForm._id;
-    await newUser.save({ session });
+      // Construct the HTML content for the email
+        const html = `
+        <p>Your registration was successful.</p>
+        <p>Name: ${fullName}</p>
+        <p>UserID: ${userId}</p>
+      `;
 
-    console.log(`${createdBy} created a record`);
-    await session.commitTransaction();
-    res.status(201).json({
-      records: newForm,
-      userId: userId,
-    });
+      console.log("Recipient email:", email);
+      await sendEmail(
+        email,
+        "CitizenLink Registration for 4Ps",
+        html
+      );
+
+      await session.commitTransaction();
+      res.status(201).json(newForm);
+    } catch (error) {
+      await session.abortTransaction();
+      handleServerError(res, error);
+    } finally {
+      session.endSession();
+    }
   } catch (error) {
-    await session.abortTransaction();
     handleServerError(res, error);
-  } finally {
-    session.endSession();
+    if (session) {
+      session.endSession();
+    }
   }
 };
-
 
 const getAllForms = async (req, res) => {
   try {

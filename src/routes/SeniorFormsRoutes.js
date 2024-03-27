@@ -1,9 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const multer = require("multer");
-const path = require("path");
 const { login } = require("../controllers/SeniorAuthControllers");
-const { changePassword } =  require('../controllers/citizenAuth');
+const { changePassword } = require('../controllers/citizenAuth');
 const {
   submitForm,
   getAllEntries,
@@ -11,7 +9,7 @@ const {
   updateEntry,
   deleteEntry,
 } = require("../controllers/SeniorFormsControllers");
-const { configureMulter } = require("../utils/multerHelpers");
+const { configureMulter } = require("../middleware/multerMiddleware");
 const authenticateUser = require("../middleware/authMiddleware");
 const extractUserIdFromToken = require("../middleware/jwtMiddleware");
 
@@ -21,19 +19,42 @@ router.post(
   "/submit",
   authenticateUser,
   extractUserIdFromToken,
-  upload.single("picture"),
+  upload.fields([
+    { name: '1x1Picture', maxCount: 1 },
+    { name: 'validDocs', maxCount: 1 }
+  ]),
   (req, res) => submitForm(req, res, upload)
 );
+
 router.get("/entries", getAllEntries);
+
 router.get("/entries/:id", getEntryById);
+
 router.put(
-  "/entries/:id",  
-  updateEntry, 
-  upload.single("picture"),
-(req, res) => updateEntry(req, res, upload));
-router.delete("/entries/:id",  deleteEntry);
+  "/entries/:id",
+  authenticateUser,
+  updateEntry,
+  upload.fields([
+    { name: '1x1Picture', maxCount: 1 },
+    { name: 'validDocs', maxCount: 1 }
+  ]),
+  (req, res) => updateEntry(req, res, upload)
+);
+
+router.delete("/entries/:id", deleteEntry);
+
+router.post(
+  "/register-online",
+  submitForm,
+  upload.fields([
+    { name: '1x1Picture', maxCount: 1 },
+    { name: 'validDocs', maxCount: 1 }
+  ]),
+  (req, res) => submitForm(req, res, upload)
+);
 
 router.post("/login", login);
+
 router.put('/change-password', authenticateUser, changePassword);
 
 module.exports = router;

@@ -1,18 +1,17 @@
 const path = require("path");
 const mongoose = require("mongoose");
+const { sendEmail } = require('../middleware/nodemailerMiddleware');
 const bcrypt = require("bcrypt");
 const fs = require("fs").promises;
 const Senior_records = require("../models/SeniorFormsSchema");
 const Senior = require("../models/seniorUserSchema");
 const _4ps_records = require('../models/_4PsFormsSchema');
 const Admin_profile = require('../models/LGUprofileSchema');
-const { configureMulter } = require('../utils/multerHelpers')
+const upload = require('../middleware/multerMiddleware');
 const {
   handleServerError,
   handleNotFoundError,
 } = require("../utils/errorHelpers");
-
-const upload = configureMulter();
 
 const submitForm = async (req, res) => {
   let session;
@@ -20,16 +19,12 @@ const submitForm = async (req, res) => {
   try {
     session = await mongoose.startSession();
     session.startTransaction();
-
+    
     const formData = req.body;
     const createdBy = req.name;
-    const hashedPassword = await bcrypt.hash("123", 10);
-
-    // Ensure email is provided and not null
     const email = formData.email;
-    if (!email || typeof email !== 'string') {
-      return res.status(400).json({ error: "Email is required" });
-    }
+    const oscaId = formData.oscaId;
+    const hashedPassword = await bcrypt.hash("123", 10);
 
     // Check if email exists in any of the schemas
     const emailExists = await Promise.any([
@@ -37,6 +32,10 @@ const submitForm = async (req, res) => {
       Senior_records.exists({ email }),
       Admin_profile.exists({ email })
     ]);
+    // Ensure email is provided and not null
+    if (!email || typeof email !== 'string') {
+      return res.status(400).json({ error: "Email is required" });
+    }
     if (emailExists) {
       console.log('Email already exists');
       return res.status(400).json({ error: "Email already exists" });
@@ -48,8 +47,6 @@ const submitForm = async (req, res) => {
       return res.status(400).json({ error: "Email cannot be null" });
     }
 
-    const oscaId = formData.oscaId;
-    // Check if OSCA ID already exists
     const oscaIdExists = await Senior_records.exists({ oscaId });
     if (oscaIdExists) {
       console.log('OSCA ID already exists');
@@ -106,9 +103,6 @@ const submitForm = async (req, res) => {
     formData.user = newUser._id;
     formData.userId = userId;
 
-    // Add picture field to formData
-    formData.picture = req.file ? req.file.path : null;
-
     try {
       // Create a new form instance with the form data
       const newForm = new Senior_records(formData);
@@ -119,6 +113,21 @@ const submitForm = async (req, res) => {
       await newUser.save({ session });
 
       console.log(`${createdBy} created a record`);
+
+      // Construct the HTML content for the email
+      const html = `
+        <p>Your registration was successful.</p>
+        <p>Name: ${fullName}</p>
+        <p>UserID: ${userId}</p>
+      `;
+
+      // Send the email
+      await sendEmail(
+        email,
+        "CitizenLink Registration for Senior Citizen",
+        html
+      );
+    
       await session.commitTransaction();
       res.status(201).json(newForm);
     } catch (error) {
@@ -134,7 +143,6 @@ const submitForm = async (req, res) => {
     }
   }
 };
-
 
 const getAllEntries = async (req, res) => {
   try {

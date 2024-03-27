@@ -19,7 +19,7 @@ const _4PsFormsModelSchema = new mongoose.Schema({
     type: String,
     maxlength: 11,
   },
-  sex: {
+  gender: {
     type: String,
     enum: ["male", "female"],
     required: true,

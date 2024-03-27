@@ -46,7 +46,7 @@ const SeniorFormsSchema = new mongoose.Schema({
     min: 60,
     maxlength: 3,
   },
-  sex: {
+  gender: {
     type: String,
     required: true,
     enum: ["male", "female"],
@@ -99,9 +99,12 @@ const SeniorFormsSchema = new mongoose.Schema({
   },
   createdBy: {
     type: String,
-    ref: "lgu accounts",
+    ref: "lgu accounts"
   },
-  picture: {
+  _1x1Picture: {
+    type: String,
+  },
+  validDocs: {
     type: String,
   },
   user: {

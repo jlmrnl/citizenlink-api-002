@@ -1,12 +1,10 @@
 const bcrypt = require("bcrypt");
-const nodemailer = require("nodemailer");
-const crypto = require("crypto"); // Import crypto module for generating random tokens
-
-// Import your models
-const _4psModel = require("../models/_4psUserSchema"); // Update with correct path and file name
-const seniorModel = require("../models/seniorUserSchema"); // Update with correct path and file name
-const userModel = require("../models/LGUuserSchema"); // Update with correct path and file name
-const ResetToken = require("../models/ResetToken"); // Update with correct path and file name
+const crypto = require("crypto");
+const _4psModel = require("../models/_4psUserSchema"); 
+const seniorModel = require("../models/seniorUserSchema");
+const userModel = require("../models/LGUuserSchema");
+const ResetToken = require("../models/ResetToken");
+const { sendEmail } = require('../middleware/nodemailerMiddleware');
 const generateResetToken = require("../middleware/generateResetToken");
 
 const forgotPassword = async (req, res) => {
@@ -47,30 +45,21 @@ const forgotPassword = async (req, res) => {
 
     const userId = user.userId; // Assign userId from the found user
 
-    // Generate a unique identifier for password reset
     const resetIdentifier = crypto.randomBytes(20).toString("hex");
 
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getMinutes() + 5);
+
     // Save the reset identifier and its association with the user in the database
-    await ResetToken.create({ identifier: resetIdentifier, userId });
+    await ResetToken.create({ identifier: resetIdentifier, userId, expiresAt });
 
     // Send the reset password link via email
-    const resetLink = `http://localhost:5173/reset-password/${resetIdentifier}`; // Adjusted for React URL
-    const transporter = nodemailer.createTransport({
-      service: "Gmail",
-      auth: {
-        user: process.env.GMAIL_EMAIL,
-        pass: process.env.GMAIL_PASSWORD,
-      },
-    });
+    const resetLink = `http://localhost:5173/reset-password/${resetIdentifier}`;
+    const subject = "Password Reset Link";
+    const html = `<p>Click the following link to reset your password: <a href="${resetLink}">Reset Password</a></p>`;
 
-    const mailOptions = {
-      from: "jlmrnl001@gmail.com",
-      to: email,
-      subject: "Password Reset Link",
-      html: `<p>Click the following link to reset your password: <a href="${resetLink}">Reset Password</a></p>`,
-    };
-
-    await transporter.sendMail(mailOptions);
+    // Call the sendEmail middleware to send the email
+    await sendEmail(email, subject, html);
 
     res.status(200).json({ message: "Password reset link sent successfully" });
   } catch (error) {
