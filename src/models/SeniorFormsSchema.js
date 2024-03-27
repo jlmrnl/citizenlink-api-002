@@ -85,7 +85,7 @@ const SeniorFormsSchema = new mongoose.Schema({
   applicationStatus: {
     type: String,
     required: false,
-    default: "pending",
+    default: null,
     enum: [
       "pending",
       "on review",
@@ -94,9 +94,13 @@ const SeniorFormsSchema = new mongoose.Schema({
       "eligible",
       "rejected",
       "approved",
-      "updated",
-      "registered online"
+      "updated"
     ],
+  },
+  applicationMethod: {
+    type: String,
+    default: 'onsite',
+    enum: ['onsite', 'online']
   },
   createdBy: {
     type: String,

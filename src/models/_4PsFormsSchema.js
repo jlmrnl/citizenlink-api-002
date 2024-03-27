@@ -78,7 +78,7 @@ const _4PsFormsModelSchema = new mongoose.Schema({
   applicationStatus: {
     type: String,
     required: false,
-    default: "pending",
+    default: null,
     enum: [
       "pending",
       "on review",
@@ -87,9 +87,13 @@ const _4PsFormsModelSchema = new mongoose.Schema({
       "eligible",
       "rejected",
       "approved",
-      "updated",
-      "register online"
+      "updated"
     ],
+  },
+  applicationMethod: {
+    type: String,
+    default: 'onsite',
+    enum: ['onsite', 'online']
   },
   createdBy: {
     type: String,
