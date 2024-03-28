@@ -13,7 +13,8 @@ const extractUserIdFromToken = (req, res, next) => {
       }
     });
   } else {
-    return res.status(401).json({ message: 'Token not provided' });
+    req.name = 'registered online'; // Set name to 'registered online' when no token is found
+    next();
   }
 };
 
