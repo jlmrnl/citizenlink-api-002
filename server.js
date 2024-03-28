@@ -16,6 +16,7 @@ require("dotenv").config();
 
 app.use(cors());
 app.use(bodyParser.json());
+app.use("/uploads", express.static("uploads"));
 
 app.use("/api/senior", Senior);
 app.use("/api/4ps", FourPs);
@@ -23,7 +24,6 @@ app.use("/api/lgu", authRoutes);
 app.use("/api/smtp", SMTP);
 app.use("/api/link", linkRoutes);
 app.use("/api/link2", linkRoutes2);
-app.use("/uploads", express.static("uploads"));
 
 connectToMongoDB().then(() => {
   const port = process.env.PORT || 3000;
