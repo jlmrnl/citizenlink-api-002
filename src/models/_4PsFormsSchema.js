@@ -78,7 +78,7 @@ const _4PsFormsModelSchema = new mongoose.Schema({
   applicationStatus: {
     type: String,
     required: false,
-    default: null,
+    default: "on review",
     enum: [
       "pending",
       "on review",
@@ -87,7 +87,7 @@ const _4PsFormsModelSchema = new mongoose.Schema({
       "eligible",
       "rejected",
       "approved",
-      "updated"
+      "updated",
     ],
   },
   applicationMethod: {
@@ -98,6 +98,7 @@ const _4PsFormsModelSchema = new mongoose.Schema({
   createdBy: {
     type: String,
     ref: "lgu accounts",
+    default: null
   },
   _1x1Picture: {
     type: String,
@@ -128,6 +129,14 @@ const _4PsFormsModelSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  updatedAt: {
+    type: Date,
+    default: null
+  },
+  updatedBy: {
+    type: String,
+    default: null
+  }
 });
 
 const _4PsFormsModel = mongoose.model("4ps records", _4PsFormsModelSchema);

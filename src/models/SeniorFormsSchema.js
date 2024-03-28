@@ -85,7 +85,7 @@ const SeniorFormsSchema = new mongoose.Schema({
   applicationStatus: {
     type: String,
     required: false,
-    default: null,
+    default: "on review",
     enum: [
       "pending",
       "on review",
@@ -131,6 +131,14 @@ const SeniorFormsSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  updatedAt: {
+    type: Date,
+    default: null
+  },
+  updatedBy: {
+    type: String,
+    default: null
+  }
 });
 
 const SeniorFormsModels = mongoose.model("senior records", SeniorFormsSchema);
