@@ -132,8 +132,7 @@ const SeniorFormsSchema = new mongoose.Schema({
     default: Date.now,
   },
   updatedAt: {
-    type: Date,
-    default: null
+    type: Date
   },
   updatedBy: {
     type: String,

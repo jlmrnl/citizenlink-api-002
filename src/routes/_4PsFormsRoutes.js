@@ -24,7 +24,7 @@ router.post(
 );
 router.get("/forms", getAllForms);
 router.get("/forms/:id", getFormById);
-router.put("/forms/:id", updateFormById, 
+router.put("/forms/:id", authenticateUser, extractUserIdFromToken, updateFormById,
   upload.fields([
   { name: '_1x1Picture', maxCount: 1 },
   { name: 'validDocs', maxCount: 1 }

@@ -30,6 +30,7 @@ router.get("/entries/:id", getEntryById);
 router.put(
   "/entries/:id",
   authenticateUser,
+  extractUserIdFromToken,
   updateEntry,
   upload.fields([
     { name: '_1x1Picture', maxCount: 1 },

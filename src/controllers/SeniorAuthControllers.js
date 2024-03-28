@@ -20,11 +20,21 @@ const login = async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
+    let fullName = user.records.firstName;
+        if (user.records.middleName) {
+            fullName += ` ${user.records.middleName}`;
+        }
+        fullName += ` ${user.records.lastName}`;
+        if (user.records.suffix) {
+            fullName += ` ${user.records.suffix}`;
+        }
+
     // Generate JWT token
     const token = jwt.sign({ 
         userId: user.userId,
         firstname: user.records.firstName,
         lastname: user.records.lastName,
+        name: fullName,
         role: user.role,
         applicationStatus: user.records.applicationStatus,
         barangay: user.records.barangay

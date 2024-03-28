@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const moment = require('moment');
 const _4ps_records = require("../models/_4PsFormsSchema");
 const _4ps = require("../models/_4psUserSchema");
 const Senior_records = require("../models/SeniorFormsSchema");
@@ -174,15 +175,50 @@ const getFormById = async (req, res) => {
 
 const updateFormById = async (req, res) => {
   try {
-    const form = await _4ps_records.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
-    if (!form) {
-      return handleNotFoundError(res, "Form not found");
+    // Initialize variables to store file paths
+    let _1x1PicturePath = null;
+    let validDocsPath = null;
+
+    // Check if the '_1x1Picture' field exists in req.files
+    if (req.files && req.files['_1x1Picture'] && req.files['_1x1Picture'][0] && req.files['_1x1Picture'][0].path) {
+      _1x1PicturePath = req.files['_1x1Picture'][0].path;
     }
-    res.json(form);
+
+    // Check if the 'validDocs' field exists in req.files
+    if (req.files && req.files['validDocs'] && req.files['validDocs'][0] && req.files['validDocs'][0].path) {
+      validDocsPath = req.files['validDocs'][0].path;
+    }
+
+    // Update req.body with picture paths if corresponding files were uploaded
+    if (_1x1PicturePath) {
+      req.body._1x1Picture = _1x1PicturePath;
+    }
+
+    if (validDocsPath) {
+      req.body.validDocs = validDocsPath;
+    }
+
+    const updatedFormEntry = await _4ps_records.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    
+    if (!updatedFormEntry) {
+      return handleNotFoundError(res, "Form entry not found");
+    }
+
+    // Update updatedAt field with formatted date
+    updatedFormEntry.updatedAt = moment().format('MM-DD-YYYY');
+
+    // Add updatedBy field with name obtained from the token
+    updatedFormEntry.updatedBy = req.name;
+    console.log(req.name)
+    await updatedFormEntry.save();
+
+    res.status(200).json(updatedFormEntry);
   } catch (error) {
+    // Handle unexpected errors
     handleServerError(res, error);
   }
 };
