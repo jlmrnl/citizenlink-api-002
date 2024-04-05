@@ -10,7 +10,7 @@ const SeniorFormsSchema = new mongoose.Schema({
   oscaId: {
     type: Number,
     unique: true,
-    maxlength: 4,
+    maxlength: 7,
   },
   isAlive: {
     type: Boolean,
