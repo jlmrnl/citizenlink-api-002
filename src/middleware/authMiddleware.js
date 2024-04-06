@@ -8,9 +8,10 @@ const authenticateUser = (req, res, next) => {
   }
 
   const token = authHeader.split(' ')[1];
+  const secret = process.env.SECRET;
 
   try {
-    const decoded = jwt.verify(token, process.env.SECRET);
+    const decoded = jwt.verify(token, secret);
     req.userId = decoded.userId;
     next();
   } catch (error) {
