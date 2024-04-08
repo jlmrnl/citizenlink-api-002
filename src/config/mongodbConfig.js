@@ -5,7 +5,7 @@ async function connectToMongoDB() {
     await mongoose.connect(process.env.MONGODB_URI);
 
     console.log("Connected to MongoDB");
-    // Return the port for server to listen on
+
     return process.env.PORT || 3000;
   } 
   catch (err) {
