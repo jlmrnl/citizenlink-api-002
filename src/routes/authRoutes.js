@@ -13,7 +13,6 @@ router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.put('/change-password', authenticateUser, changePassword);
 
-
 router.get("/userCount", checkAdminRole);
 router.get("/users", getAllUsers);
 
