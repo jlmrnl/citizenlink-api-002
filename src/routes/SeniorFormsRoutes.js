@@ -24,7 +24,6 @@ router.post(
 );
 
 router.get("/entries", getAllEntries);
-
 router.get("/entries/:id", getEntryById);
 
 router.put(
@@ -42,7 +41,6 @@ router.put(
 router.delete("/entries/:id", deleteEntry);
 
 router.post("/login", login);
-
 router.put('/change-password', authenticateUser, changePassword);
 
 module.exports = router;
