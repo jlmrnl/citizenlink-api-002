@@ -1,7 +1,11 @@
+
+require("dotenv").config();
+
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+
 const Senior = require("./src/routes/SeniorFormsRoutes");
 const FourPs = require("./src/routes/_4PsFormsRoutes");
 const authRoutes = require("./src/routes/authRoutes");
@@ -11,8 +15,6 @@ const linkRoutes2 = require("./src/routes/CMS2");
 const { connectToMongoDB } = require("./src/config/mongodbConfig");
 
 const app = express();
-
-require("dotenv").config();
 
 app.use(cors());
 app.use(bodyParser.json());
